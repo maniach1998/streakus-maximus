@@ -1,0 +1,34 @@
+{
+	"name": "streakus-maximus",
+	"version": "1.0.0",
+	"description": "Maintain habits, complete streaks, and earn badges!",
+	"main": "app.js",
+	"scripts": {
+		"dev": "concurrently \"npm run build:css\" \"nodemon server.js\"",
+		"start": "node app.js",
+		"build:css": "npx tailwindcss -i ./styles/tailwind.css -o ./public/styles/tailwind.css --watch"
+	},
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/maniach1998/streakus-maximus.git"
+	},
+	"author": "Manas Acharekar 10475301",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/maniach1998/streakus-maximus/issues"
+	},
+	"homepage": "https://github.com/maniach1998/streakus-maximus#readme",
+	"dependencies": {
+		"autoprefixer": "^10.4.20",
+		"express": "^4.21.1",
+		"express-handlebars": "^8.0.1",
+		"mongodb": "^6.11.0",
+		"postcss": "^8.4.49",
+		"tailwindcss": "^3.4.15"
+	},
+	"devDependencies": {
+		"concurrently": "^9.1.0",
+		"nodemon": "^3.1.7"
+	}
+}
