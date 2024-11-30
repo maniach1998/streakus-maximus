@@ -1,0 +1,22 @@
+<h1 class="text-6xl mb-5 font-bold text-primary tracking-tight scroll-m-20">
+	Sign up
+</h1>
+<p class="text-lg font-medium text-muted-foreground">
+	Create an account, and start tracking your habits!
+</p>
+
+<form action="/auth/sign-up" method="post">
+	<label for="firstName">First Name</label>
+	<input type="text" name="firstName" id="firstName" />
+
+	<label for="lastName">Last Name</label>
+	<input type="text" name="lastName" id="lastName" />
+
+	<label for="email">Email address</label>
+	<input type="email" name="email" id="email" />
+
+	<label for="password">Password</label>
+	<input type="password" name="password" id="password" />
+
+	<button type="submit">Create account</button>
+</form>
