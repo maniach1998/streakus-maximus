@@ -1,8 +1,8 @@
-import homeRoutes from "./home.js";
+import landingRoutes from "./landing.js";
 import userRoutes from "./users.js";
 
 export default (app) => {
-	app.use("/", homeRoutes);
+	app.use("/", landingRoutes);
 	app.use("/auth", userRoutes);
 
 	app.use("*", async (req, res) => {
