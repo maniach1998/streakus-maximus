@@ -7,16 +7,28 @@
 
 <form action="/auth/sign-up" method="post">
 	<label for="firstName">First Name</label>
-	<input type="text" name="firstName" id="firstName" />
+	<input type="text" name="firstName" id="firstName" required />
 
 	<label for="lastName">Last Name</label>
-	<input type="text" name="lastName" id="lastName" />
+	<input type="text" name="lastName" id="lastName" required />
 
 	<label for="email">Email address</label>
-	<input type="email" name="email" id="email" />
+	<input type="email" name="email" id="email" required />
 
 	<label for="password">Password</label>
 	<input type="password" name="password" id="password" />
 
 	<button type="submit">Create account</button>
 </form>
+
+{{#if errors }}
+{{#each errors}}
+<p class="text-destructive text-sm">{{this.message}}</p>
+{{/each}}
+{{/if}}
+
+{{#if rootError}}
+<p class="text-destructive text-sm">{{{rootError}}}</p>
+{{/if}}
+
+<p class="text-muted-foreground">Already have an account? <a href="/auth/login" class="hover:underline">Log in</a></p>

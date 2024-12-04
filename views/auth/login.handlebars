@@ -1,0 +1,29 @@
+<h1 class="text-6xl mb-5 font-bold text-primary tracking-tight scroll-m-20">
+  Log in
+</h1>
+<p class="text-lg font-medium text-muted-foreground">
+  Login to your account, and see your tracked progress!
+</p>
+
+<form action="/auth/login" method="post">
+  <label for="email">Email address</label>
+  <input type="email" name="email" id="email" />
+
+  <label for="password">Password</label>
+  <input type="password" name="password" id="password" />
+
+  <button type="submit">Login</button>
+</form>
+
+{{#if errors }}
+{{#each errors}}
+<p class="text-destructive text-sm">{{this.message}}</p>
+{{/each}}
+{{/if}}
+
+{{#if rootError}}
+<p class="text-destructive text-sm">{{{rootError}}}</p>
+{{/if}}
+
+<p class="text-muted-foreground">Don&apos;t have an account? <a href="/auth/sign-up" class="hover:underline">Sign up</a>
+</p>
