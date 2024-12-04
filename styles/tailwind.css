@@ -31,3 +31,7 @@
 		--chart-5: 27 87% 67%;
 	}
 }
+
+a {
+	@apply font-semibold hover:text-primary transition-all duration-300;
+}
