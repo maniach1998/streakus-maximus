@@ -46,6 +46,10 @@ router
 
 			const user = await loginUser(validatedData);
 
+			// setup session
+			req.session.user = user;
+			req.session.isAuthenticated = true;
+
 			return res.json({
 				success: true,
 				user,
@@ -63,5 +67,19 @@ router
 			}
 		}
 	});
+
+router.route("/logout").get(async (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error("Error destroying session", err);
+			return res.status(500).json({
+				success: false,
+				message: "Error logging out",
+			});
+		}
+		res.clearCookie("connect.sid");
+		res.redirect("/login");
+	});
+});
 
 export default router;
