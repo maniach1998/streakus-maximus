@@ -9,6 +9,9 @@ const router = Router();
 router
 	.route("/sign-up")
 	.get(async (req, res) => {
+		const isAuthenticated = req.session.isAuthenticated;
+		if (isAuthenticated) return res.redirect("/dashboard");
+
 		return res.render("auth/signup", { title: "Sign Up" });
 	})
 	.post(async (req, res) => {
@@ -17,6 +20,7 @@ router
 
 			const newUser = await createUser(validatedData);
 
+			// TODO: redirect to login page/setup token and redirect to dash
 			return res.json({
 				success: true,
 				user: newUser,
@@ -38,6 +42,9 @@ router
 router
 	.route("/login")
 	.get(async (req, res) => {
+		const isAuthenticated = req.session.isAuthenticated;
+		if (isAuthenticated) return res.redirect("/dashboard");
+
 		return res.render("auth/login", { title: "Log in" });
 	})
 	.post(async (req, res) => {
@@ -50,10 +57,7 @@ router
 			req.session.user = user;
 			req.session.isAuthenticated = true;
 
-			return res.json({
-				success: true,
-				user,
-			});
+			return res.redirect("/dashboard");
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				return res
@@ -77,8 +81,8 @@ router.route("/logout").get(async (req, res) => {
 				message: "Error logging out",
 			});
 		}
-		res.clearCookie("connect.sid");
-		res.redirect("/login");
+		res.clearCookie("StreakusMaximus");
+		res.redirect("/auth/login");
 	});
 });
 
