@@ -8,16 +8,27 @@
 	<meta name="description" content="{{{description}}}" />
 
 	<link href="/styles/tailwind.css" rel="stylesheet" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href='https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap'
+		rel="stylesheet" />
+
 </head>
 
 <body>
-	<header>
+	<header class="fixed p-4 border-b border-muted bg-background w-full">
 		<nav class="flex list-none gap-5">
 			<li><a href="/">Home</a></li>
-			<li><a href="/auth/sign-up">Login/Sign up</a></li>
+			{{#if user}}
+			<li><a href="/dashboard">Dashboard</a></li>
+			{{/if}}
+			<li><a href="/auth/login">Log in</a></li>
 		</nav>
 	</header>
-	{{{body}}}
+
+	<main>
+		{{{body}}}
+	</main>
 </body>
 
 </html>
