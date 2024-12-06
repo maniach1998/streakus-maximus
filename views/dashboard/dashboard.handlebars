@@ -1,8 +1,36 @@
 <h1>Dashboard</h1>
 <h2>Welcome, {{user.firstName}}</h2>
 
-<h3 class="text-primary">Active Habits</h3>
-<div class="bg-muted rounded-md w-full h-20 my-5"></div>
+<h3 class="text-primary">Active Habits <span class="text-primary text-base">( {{habits.length}} )</span></h3>
+<a href="/habits" class="font-bold">All habits -></a>
+
+{{#if habits.length}}
+<div class="my-3">
+  {{#each habits}}
+  <div id="{{this._id}}" class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
+    <a href="/habits/{{this._id}}">
+      <h3 class="text-primary w-fit hover:text-primary/80">{{this.name}}</h3>
+    </a>
+    <p class="text-sm">{{this.description}}</p>
+
+    <div class="my-3 flex gap-5">
+      <p>Frequency: {{this.frequency}}</p>
+      <p>Streak: {{this.streak}}🔥</p>
+      <p>Completions: {{this.totalCompletions}}✅</p>
+    </div>
+
+
+    <p class="text-sm text-muted-foreground">Created at {{this.createdAt}}</p>
+  </div>
+  {{/each}}
+</div>
+{{else}}
+<div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
+  <p class="text-muted-foreground text-sm">No active habits 😔</p>
+</div>
+{{/if}}
 
 <h3 class="text-primary">Current streaks</h3>
-<div class="bg-muted rounded-md w-full h-20 my-5"></div>
+<div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
+  <p class="text-muted-foreground text-sm">No active streaks 😞</p>
+</div>

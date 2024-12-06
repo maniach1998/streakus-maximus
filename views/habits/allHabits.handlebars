@@ -1,0 +1,62 @@
+<h1>Your habits</h1>
+
+<div class="mb-10">
+  <h2>Create a new habit</h2>
+  <p class="text-lg font-medium text-muted-foreground">
+    Start tracking a new habit and build your streak!
+  </p>
+
+  <form action="/habits" method="post">
+    <label for="name">Habit name</label>
+    <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" />
+
+    <label for="description">Description</label>
+    <input type="text" name="description" id="description" required placeholder="Describe your habit in detail" />
+
+    <label for="frequency">Frequency</label>
+    <select name="frequency" id="frequency" required class="">
+      <option value="" selected disabled>Select frequency</option>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+    </select>
+
+    <button type="submit">Create habit</button>
+  </form>
+
+  {{#if errors}}
+  {{#each errors}}
+  <p class="text-destructive text-sm font-semibold">{{this.message}}</p>
+  {{/each}}
+  {{/if}}
+
+  {{#if rootError}}
+  <p class="text-destructive text-sm font-semibold">{{{rootError}}}</p>
+  {{/if}}
+</div>
+
+{{#if habits.length}}
+<div class="mt-10">
+  <h2>Active habits <span class="text-primary text-base">( {{habits.length}} )</span></h2>
+
+  {{#each habits}}
+  <div id="{{this._id}}" class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
+    <a href="/habits/{{this._id}}">
+      <h3 class="text-primary w-fit">{{this.name}}</h3>
+    </a>
+    <p class="text-sm">{{this.description}}</p>
+
+    <div class="my-3 flex gap-5">
+      <p>Frequency: {{this.frequency}}</p>
+      <p>Streak: {{this.streak}}🔥</p>
+      <p>Completions: {{this.totalCompletions}}✅</p>
+    </div>
+
+
+    <p class="text-sm text-muted-foreground">Created at {{this.createdAt}}</p>
+  </div>
+  {{/each}}
+</div>
+{{else}}
+<p class="text-muted-foreground">No habits to show</p>
+{{/if}}

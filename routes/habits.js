@@ -22,7 +22,7 @@ router
 			const status = req.query.status || "active";
 			const habits = await getUserHabits(req.session.user._id, status);
 
-			return res.json({ success: true, habits });
+			return res.render("habits/allHabits", { title: "Habits", habits });
 		} catch (err) {
 			return res.status(err.cause || 500).json({
 				success: false,
@@ -34,15 +34,18 @@ router
 		try {
 			const newHabit = await createHabit(req.session.user._id, req.body);
 
+			// TODO: redirect to same page or to /:id
 			return res.status(201).json({ success: true, habit: newHabit });
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				return res.status(400).json({
+				return res.status(400).render("habits/allHabits", {
+					title: "Habits",
 					success: false,
 					errors: err.errors,
 				});
 			} else {
-				return res.status(err.cause || 500).json({
+				return res.status(err.cause || 500).render("habits/allHabits", {
+					title: "Habits",
 					success: false,
 					message: err.message || "Internal server error",
 				});

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { z } from "zod";
 
 import { requireAuth } from "../middlewares/auth.js";
+import { getUserHabits } from "../data/habits.js";
 
 const router = Router();
 
@@ -11,7 +11,21 @@ router.use(requireAuth);
 router.route("/").get(async (req, res) => {
 	const user = req.session.user;
 
-	return res.render("dashboard/dashboard", { title: "Dashboard", user });
+	try {
+		const activeHabits = await getUserHabits(user._id, "active");
+
+		return res.render("dashboard/dashboard", {
+			title: "Dashboard",
+			user,
+			habits: activeHabits,
+		});
+	} catch (err) {
+		return res.status(err.cause || 500).render("dashboard/dashboard", {
+			title: "Dashboard",
+			user,
+			error: err.message || "Internal server error",
+		});
+	}
 });
 
 export default router;
