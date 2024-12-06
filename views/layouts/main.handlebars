@@ -20,11 +20,13 @@
 	<header class="fixed p-4 border-b border-muted bg-background w-full">
 		<nav>
 			<ul class="flex list-none gap-5">
-				<li><a href="/">Home</a></li>
-				{{#if user}}
+				{{#if isAuthenticated}}
 				<li><a href="/dashboard">Dashboard</a></li>
-				{{/if}}
+				<li><a href="/auth/logout">Log out</a></li>
+				{{else}}
+				<li><a href="/">Home</a></li>
 				<li><a href="/auth/login">Log in</a></li>
+				{{/if}}
 			</ul>
 		</nav>
 	</header>
