@@ -21,6 +21,7 @@ app.use(express.static("public"));
 // setup session
 app.use(
 	session({
+		name: "StreakusMaximus",
 		secret: "very_secret_key_here",
 		resave: false,
 		saveUninitialized: false,
