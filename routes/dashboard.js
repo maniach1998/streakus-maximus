@@ -5,7 +5,10 @@ import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
-router.route("/").get(requireAuth, async (req, res) => {
+// require auth for all routes
+router.use(requireAuth);
+
+router.route("/").get(async (req, res) => {
 	const user = req.session.user;
 
 	return res.render("dashboard/dashboard", { title: "Dashboard", user });
