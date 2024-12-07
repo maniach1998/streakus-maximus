@@ -4,6 +4,7 @@ import session from "express-session";
 
 import configRoutes from "./routes/index.js";
 import { setUserDefaults } from "./middlewares/auth.js";
+import { handlebarsHelpers } from "./handlebars.js";
 
 const app = express();
 const PORT = 3000;
@@ -15,6 +16,7 @@ app.engine(
 		defaultLayout: "main",
 		extname: ".handlebars",
 		partialsDir: ["views/partials"],
+		helpers: handlebarsHelpers,
 	})
 );
 app.set("view engine", "handlebars");
