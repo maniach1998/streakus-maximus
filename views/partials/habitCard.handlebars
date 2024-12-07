@@ -1,0 +1,14 @@
+<div id="{{_id}}" class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
+  <a href="/habits/{{_id}}">
+    <h3 class="text-primary w-fit hover:text-primary/80 transition-all duration-300">{{name}}</h3>
+  </a>
+  <p class="text-sm">{{description}}</p>
+
+  <div class="my-3 flex gap-5">
+    <p>Frequency: {{frequency}}</p>
+    <p>Streak: {{streak}}🔥</p>
+    <p>Completions: {{totalCompletions}}✅</p>
+  </div>
+
+  <p class="text-sm text-muted-foreground">Created at {{createdAt}}</p>
+</div>

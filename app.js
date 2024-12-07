@@ -9,7 +9,14 @@ const app = express();
 const PORT = 3000;
 
 // handlebars setup
-app.engine("handlebars", handlebars.engine({ defaultLayout: "main" }));
+app.engine(
+	"handlebars",
+	handlebars.engine({
+		defaultLayout: "main",
+		extname: ".handlebars",
+		partialsDir: ["views/partials"],
+	})
+);
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 
