@@ -39,9 +39,12 @@
 <div class="mt-10">
   <h2>Active habits <span class="text-primary text-base">( {{habits.length}} )</span></h2>
 
-  {{#each habits}}
-  {{> habitCard this}}
-  {{/each}}
+  <div class="grid grid-cols-1 gap-5">
+    {{#each habits}}
+    {{> habitCard this}}
+    {{/each}}
+  </div>
+
 </div>
 {{else}}
 <p class="text-muted-foreground">No habits to show</p>

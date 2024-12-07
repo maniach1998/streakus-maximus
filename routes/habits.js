@@ -7,10 +7,8 @@ import {
 	getUserHabits,
 	getHabitById,
 	updateHabit,
-	deactivateHabit,
-	reactivateHabit,
 } from "../data/habits.js";
-import { markHabitComplete, getHabitCompletions } from "../data/completions.js";
+import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
 
@@ -24,7 +22,17 @@ router
 			const status = req.query.status || "active";
 			const habits = await getUserHabits(req.session.user._id, status);
 
-			return res.render("habits/allHabits", { title: "Habits", habits });
+			const habitsWithStatus = await Promise.all(
+				habits.map(async (habit) => ({
+					...habit,
+					canComplete: await canMarkComplete(habit, req.session.user._id),
+				}))
+			);
+
+			return res.render("habits/allHabits", {
+				title: "Habits",
+				habits: habitsWithStatus,
+			});
 		} catch (err) {
 			return res.status(err.cause || 500).json({
 				success: false,
@@ -55,18 +63,33 @@ router
 		}
 	});
 
+// TODO: add templates and routes for creating new habit
+
+// TODO: add templates for updating habit
 router
 	.route("/:id")
 	.get(async (req, res) => {
 		try {
 			const habit = await getHabitById(req.params.id, req.session.user._id);
+			const canComplete = await canMarkComplete(habit, req.session.user._id);
 
-			return res.json({ success: true, habit });
-		} catch (err) {
-			return res.status(err.cause || 500).json({
-				success: false,
-				message: err.message || "Internal server error",
+			return res.render("habits/habit", {
+				title: habit.name,
+				habit,
+				canComplete,
 			});
+		} catch (err) {
+			if (err instanceof z.ZodError) {
+				return res.status(400).json({
+					success: false,
+					errors: err.errors,
+				});
+			} else {
+				return res.status(err.cause || 500).json({
+					success: false,
+					message: err.message || "Internal server error",
+				});
+			}
 		}
 	})
 	.put(async (req, res) => {
@@ -95,70 +118,5 @@ router
 			}
 		}
 	});
-
-router.route("/:id/complete").post(async (req, res) => {
-	try {
-		const { completion, habit } = await markHabitComplete(
-			req.params.id,
-			req.session.user._id
-		);
-
-		return res.json({ success: true, completion });
-	} catch (err) {
-		if (err instanceof z.ZodError) {
-			return res.status(400).json({
-				success: false,
-				errors: err.errors,
-			});
-		} else {
-			return res.status(err.cause || 500).json({
-				success: false,
-				message: err.message || "Internal server error",
-			});
-		}
-	}
-});
-
-router.route("/:id/completions").get(async (req, res) => {
-	try {
-		const completions = await getHabitCompletions(
-			req.params.id,
-			req.session.user._id
-		);
-
-		return res.json({ success: true, completions });
-	} catch (err) {
-		return res.status(err.cause || 500).json({
-			success: false,
-			message: err.message || "Internal server error",
-		});
-	}
-});
-
-router.route("/:id/deactivate").post(async (req, res) => {
-	try {
-		const habit = await deactivateHabit(req.params.id, req.session.user._id);
-
-		return res.json({ success: true, habit });
-	} catch (err) {
-		return res.status(err.cause || 500).json({
-			success: false,
-			message: err.message || "Internal server error",
-		});
-	}
-});
-
-router.route("/:id/reactivate").post(async (req, res) => {
-	try {
-		const habit = await reactivateHabit(req.params.id, req.session.user._id);
-
-		return res.json({ success: true, habit });
-	} catch (err) {
-		return res.status(err.cause || 500).json({
-			success: false,
-			message: err.message || "Internal server error",
-		});
-	}
-});
 
 export default router;

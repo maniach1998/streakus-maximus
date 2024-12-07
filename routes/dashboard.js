@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { requireAuth } from "../middlewares/auth.js";
 import { getUserHabits } from "../data/habits.js";
+import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
 
@@ -13,11 +14,17 @@ router.route("/").get(async (req, res) => {
 
 	try {
 		const activeHabits = await getUserHabits(user._id, "active");
+		const habitsWithStatus = await Promise.all(
+			activeHabits.map(async (habit) => ({
+				...habit,
+				canComplete: await canMarkComplete(habit, req.session.user._id),
+			}))
+		);
 
 		return res.render("dashboard/dashboard", {
 			title: "Dashboard",
 			user,
-			habits: activeHabits,
+			habits: habitsWithStatus,
 		});
 	} catch (err) {
 		return res.status(err.cause || 500).render("dashboard/dashboard", {

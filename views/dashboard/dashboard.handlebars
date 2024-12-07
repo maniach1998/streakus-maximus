@@ -6,9 +6,11 @@
 
 {{#if habits.length}}
 <div class="my-3">
-  {{#each habits}}
-  {{> habitCard this}}
-  {{/each}}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {{#each habits}}
+    {{> habitCard this}}
+    {{/each}}
+  </div>
 </div>
 {{else}}
 <div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">

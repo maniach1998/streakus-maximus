@@ -1,0 +1,32 @@
+<h1>{{habit.name}}</h1>
+<p>{{habit.description}}</p>
+<p class="text-sm text-muted-foreground">Created at {{formatDate habit.createdAt}}</p>
+
+<div class="my-10 grid grid-cols-3">
+  <div class="col-span-1 justify-items-center">
+    <p class="font-medium text-sm">Frequency</p>
+    <p class="font-extrabold text-2xl">{{habit.frequency}}</p>
+  </div>
+
+  <div class="col-span-1 justify-items-center">
+    <p class="font-medium text-sm">Streak</p>
+    <p class="font-extrabold text-2xl"><span data-streak>{{habit.streak}}</span>🔥</p>
+  </div>
+
+  <div class="col-span-1 justify-items-center">
+    <p class="font-medium text-sm">Completions</p>
+    <p class="font-extrabold text-2xl"><span data-completions>{{habit.totalCompletions}}</span>✅</p>
+  </div>
+</div>
+
+<button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
+  {{#if canComplete}}
+  Complete
+  {{else}}
+  {{#if frequency}}
+  Complete again {{frequency}}
+  {{else}}
+  Already Completed
+  {{/if}}
+  {{/if}}
+</button>
