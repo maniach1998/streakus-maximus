@@ -71,6 +71,9 @@ export const markHabitComplete = async (habitId, userId) => {
 };
 
 export const getHabitCompletions = async (habitId, userId) => {
+	// make sure the habit exists
+	await getHabitById(habitId, userId);
+
 	const completionsCollection = await completions();
 
 	const habitCompletions = await completionsCollection
