@@ -11,6 +11,10 @@ export default (app) => {
 	app.use("/habits", habitRoutes);
 
 	app.use("*", async (req, res) => {
-		return res.status(404).send({ error: "Not found! ⛔" });
+		return res.status(404).render("error", {
+			title: "Not found",
+			code: 404,
+			message: "Stop ⛔! We couldn't find this page...",
+		});
 	});
 };
