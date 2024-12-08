@@ -1,6 +1,13 @@
 import { ObjectId } from "mongodb";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js";
 
 import { completions } from "./config/collections.js";
+
+// use plugins
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export const canMarkComplete = async (habit, userId) => {
 	const completionsCollection = await completions();
@@ -11,26 +18,19 @@ export const canMarkComplete = async (habit, userId) => {
 
 	if (!lastCompletion) return true;
 
-	const lastCompletionDate = new Date(lastCompletion.date);
-	const currentDate = new Date();
+	const lastCompletionDate = dayjs(lastCompletion.date);
+	const currentDate = dayjs();
 
 	switch (habit.frequency) {
 		case "daily":
-			return (
-				lastCompletionDate.getDate() !== currentDate.getDate() ||
-				lastCompletionDate.getMonth() !== currentDate.getMonth() ||
-				lastCompletionDate.getFullYear() !== currentDate.getFullYear()
-			);
+			// Can complete if the last completion was yesterday or earlier
+			return !lastCompletionDate.isSame(currentDate, "day");
 		case "weekly":
-			const weekDiff = Math.floor(
-				(currentDate - lastCompletionDate) / (7 * 24 * 60 * 60 * 1000)
-			);
-			return weekDiff >= 1;
+			// Can complete if the last completion was in a previous week
+			return !lastCompletionDate.isSame(currentDate, "week");
 		case "monthly":
-			return (
-				lastCompletionDate.getMonth() !== currentDate.getMonth() ||
-				lastCompletionDate.getFullYear() !== currentDate.getFullYear()
-			);
+			// Can complete if the last completion was in a previous month
+			return !lastCompletionDate.isSame(currentDate, "month");
 		default:
 			return false;
 	}
@@ -49,65 +49,74 @@ export const calculateStreak = async (habit, userId) => {
 	if (allCompletions.length === 0) return 0;
 
 	let streak = 1;
-	const currentDate = new Date();
-	let lastDate = new Date(allCompletions[0].date);
+	const currentDate = dayjs();
+	let lastDate = dayjs(allCompletions[0].date);
 
-	// Check if the most recent completion is within the frequency window
+	// Check if the streak is still active
 	switch (habit.frequency) {
 		case "daily":
-			// If last completion is not from today or yesterday, the streak is broken
-			const daysDiff = Math.floor(
-				(currentDate - lastDate) / (24 * 60 * 60 * 1000)
-			);
-			if (daysDiff > 1) return 0;
+			// If last completion was more than a day ago, streak is broken
+			if (currentDate.diff(lastDate, "day") > 1) return 0;
 			break;
 		case "weekly":
-			const weekDiff = Math.floor(
-				(currentDate - lastDate) / (7 * 24 * 60 * 60 * 1000)
-			);
-			if (weekDiff > 1) return 0;
+			// If last completion was more than a week ago, streak is broken
+			if (currentDate.diff(lastDate, "week") > 1) return 0;
 			break;
 		case "monthly":
-			const monthDiff =
-				currentDate.getMonth() -
-				lastDate.getMonth() +
-				12 * (currentDate.getFullYear() - lastDate.getFullYear());
-			if (monthDiff > 1) return 0;
+			// If last completion was more than a month ago, streak is broken
+			if (currentDate.diff(lastDate, "month") > 1) return 0;
 			break;
 	}
 
 	// Calculate streak based on consecutive completions
-	const { streak: finalStreak } = allCompletions.slice(1).reduce(
-		({ streak, lastDate }, completion) => {
-			const currentCompletionDate = new Date(completion.date);
-			const timeDiff = lastDate - currentCompletionDate;
+	for (let i = 1; i < allCompletions.length; i++) {
+		const currentCompletionDate = dayjs(allCompletions[i].date);
 
-			switch (habit.frequency) {
-				case "daily":
-					if (Math.floor(timeDiff / (24 * 60 * 60 * 1000)) === 1) {
-						return { streak: streak + 1, lastDate: currentCompletionDate };
-					}
-					return { streak, lastDate }; // Break streak
-				case "weekly":
-					if (Math.floor(timeDiff / (7 * 24 * 60 * 60 * 1000)) === 1) {
-						return { streak: streak + 1, lastDate: currentCompletionDate };
-					}
-					return { streak, lastDate }; // Break streak
-				case "monthly":
-					const monthDiff =
-						lastDate.getMonth() -
-						currentCompletionDate.getMonth() +
-						12 * (lastDate.getFullYear() - currentCompletionDate.getFullYear());
-					if (monthDiff === 1) {
-						return { streak: streak + 1, lastDate: currentCompletionDate };
-					}
-					return { streak, lastDate }; // Break streak
-				default:
-					return { streak, lastDate };
-			}
-		},
-		{ streak: 1, lastDate: new Date(allCompletions[0].date) }
-	);
+		switch (habit.frequency) {
+			case "daily":
+				// For daily habits, check if the dates are consecutive
+				// We use startOf('day') to ignore time and just compare dates
+				const dayDiff = lastDate
+					.startOf("day")
+					.diff(currentCompletionDate.startOf("day"), "day");
 
-	return finalStreak;
+				if (dayDiff === 1) {
+					streak++;
+					lastDate = currentCompletionDate;
+				} else {
+					return streak;
+				}
+				break;
+
+			case "weekly":
+				// For weekly habits, check if completions are in consecutive weeks
+				const weekDiff = lastDate
+					.startOf("week")
+					.diff(currentCompletionDate.startOf("week"), "week");
+
+				if (weekDiff === 1) {
+					streak++;
+					lastDate = currentCompletionDate;
+				} else {
+					return streak;
+				}
+				break;
+
+			case "monthly":
+				// For monthly habits, check if completions are in consecutive months
+				const monthDiff = lastDate
+					.startOf("month")
+					.diff(currentCompletionDate.startOf("month"), "month");
+
+				if (monthDiff === 1) {
+					streak++;
+					lastDate = currentCompletionDate;
+				} else {
+					return streak;
+				}
+				break;
+		}
+	}
+
+	return streak;
 };

@@ -1,10 +1,10 @@
-import { canMarkComplete } from "./helpers.js";
+import dayjs from "dayjs";
 
 export const handlebarsHelpers = {
-	canComplete: async function (habit, userId) {
-		return await canMarkComplete(habit, userId);
+	formatDate: (date) => {
+		return dayjs(date).format("MMM D, YYYY");
 	},
-	formatDate: function (date) {
-		return new Date(date).toLocaleDateString();
+	fromNow: (date) => {
+		return dayjs(date).fromNow();
 	},
 };

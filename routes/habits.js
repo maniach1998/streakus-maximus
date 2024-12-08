@@ -8,6 +8,7 @@ import {
 	getHabitById,
 	updateHabit,
 } from "../data/habits.js";
+import { getHabitStats } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
@@ -74,7 +75,7 @@ router
 			const canComplete = await canMarkComplete(habit, req.session.user._id);
 
 			return res.render("habits/habit", {
-				title: habit.name,
+				title: `${habit.name} ${habit.streak}🔥`,
 				habit,
 				canComplete,
 			});
@@ -118,5 +119,23 @@ router
 			}
 		}
 	});
+
+router.route("/:id/stats").get(async (req, res) => {
+	try {
+		const habit = await getHabitById(req.params.id, req.session.user._id);
+		const stats = await getHabitStats(req.params.id, req.session.user._id);
+
+		return res.render("habits/stats", {
+			title: `${habit.name} - Stats`,
+			habit,
+			stats,
+		});
+	} catch (err) {
+		return res.status(err.cause || 500).render("error", {
+			title: "Error",
+			error: err.message || "Internal server error",
+		});
+	}
+});
 
 export default router;

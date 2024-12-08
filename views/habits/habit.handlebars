@@ -2,6 +2,10 @@
 <p>{{habit.description}}</p>
 <p class="text-sm text-muted-foreground">Created at {{formatDate habit.createdAt}}</p>
 
+<a href="/habits/{{habit._id}}/stats" class="hover:text-primary transition-colors">
+  View Stats ->
+</a>
+
 <div class="my-10 grid grid-cols-3">
   <div class="col-span-1 justify-items-center">
     <p class="font-medium text-sm">Frequency</p>
@@ -23,10 +27,6 @@
   {{#if canComplete}}
   Complete
   {{else}}
-  {{#if frequency}}
-  Complete again {{frequency}}
-  {{else}}
-  Already Completed
-  {{/if}}
+  Complete again {{habit.frequency}}
   {{/if}}
 </button>

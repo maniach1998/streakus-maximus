@@ -21,17 +21,25 @@
     </div>
   </div>
 
-  <button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
-    {{#if canComplete}}
-    Complete
-    {{else}}
-    {{#if frequency}}
-    Complete again {{frequency}}
-    {{else}}
-    Already Completed
-    {{/if}}
-    {{/if}}
-  </button>
+  <div class="flex items-center justify-between mt-4">
+    <button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
+      {{#if canComplete}}
+      Complete
+      {{else}}
+      Complete again {{frequency}}
+      {{/if}}
+    </button>
 
-  <p class="text-sm text-muted-foreground">Created at {{formatDate createdAt}}</p>
+    <a href="/habits/{{_id}}/stats" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+      View Stats ->
+    </a>
+  </div>
+
+  <p class="text-sm text-muted-foreground">
+    {{#if this.fromNow}}
+    Completed {{this.fromNow}}
+    {{else}}
+    Created {{formatDate createdAt}}
+    {{/if}}
+  </p>
 </div>

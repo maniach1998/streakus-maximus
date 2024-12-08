@@ -136,3 +136,19 @@ export const reactivateHabit = async (habitId, userId) => {
 
 	return response;
 };
+
+export const getActiveStreaks = async (userId) => {
+	const habitsCollection = await habits();
+
+	const activeStreaks = await habitsCollection
+		.find({
+			userId: ObjectId.createFromHexString(userId),
+			status: "active",
+			streak: { $gt: 0 },
+		})
+		.sort({ streak: -1 })
+		.project({ _id: 1, name: 1, frequency: 1, streak: 1 })
+		.toArray();
+
+	return activeStreaks;
+};

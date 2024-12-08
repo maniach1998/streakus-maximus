@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { requireAuth } from "../middlewares/auth.js";
-import { getUserHabits } from "../data/habits.js";
+import { getActiveStreaks, getUserHabits } from "../data/habits.js";
 import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
@@ -13,7 +13,12 @@ router.route("/").get(async (req, res) => {
 	const user = req.session.user;
 
 	try {
-		const activeHabits = await getUserHabits(user._id, "active");
+		// get active habits and streaks parallely
+		const [activeHabits, activeStreaks] = await Promise.all([
+			getUserHabits(user._id, "active"),
+			getActiveStreaks(user._id),
+		]);
+		// const activeHabits = await getUserHabits(user._id, "active");
 		const habitsWithStatus = await Promise.all(
 			activeHabits.map(async (habit) => ({
 				...habit,
@@ -25,6 +30,8 @@ router.route("/").get(async (req, res) => {
 			title: "Dashboard",
 			user,
 			habits: habitsWithStatus,
+			streaks: activeStreaks,
+			hasStreaks: activeStreaks.length > 0,
 		});
 	} catch (err) {
 		return res.status(err.cause || 500).render("dashboard/dashboard", {

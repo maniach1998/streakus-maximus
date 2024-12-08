@@ -1,0 +1,86 @@
+<div class="mb-6">
+  <a href="/habits/{{habit._id}}" class="text-primary hover:text-primary/80"><- Back to habit</a>
+      <h1 class="text-4xl font-bold mt-2">{{habit.name}} Stats</h1>
+      <p class="text-muted-foreground">{{habit.description}}</p>
+</div>
+
+{{!-- Stats Overview --}}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="bg-card p-4 rounded-lg border border-secondary">
+    <h3 class="text-sm font-medium text-muted-foreground">Current Streak</h3>
+    <p class="text-2xl font-bold">{{stats.currentStreak}}🔥</p>
+  </div>
+
+  <div class="bg-card p-4 rounded-lg border border-secondary">
+    <h3 class="text-sm font-medium text-muted-foreground">Longest Streak</h3>
+    <p class="text-2xl font-bold">{{stats.longestStreak}}🏆</p>
+  </div>
+
+  <div class="bg-card p-4 rounded-lg border border-secondary">
+    <h3 class="text-sm font-medium text-muted-foreground">Completion Rate</h3>
+    <p class="text-2xl font-bold">{{stats.completionRate}}%</p>
+  </div>
+
+  <div class="bg-card p-4 rounded-lg border border-secondary">
+    <h3 class="text-sm font-medium text-muted-foreground">Total Completions</h3>
+    <p class="text-2xl font-bold">{{stats.totalCompletions}}✅</p>
+  </div>
+</div>
+
+{{!-- Recent Activity --}}
+<div class="mb-8">
+  <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+  {{#if stats.recentCompletions.length}}
+  <div class="bg-card border border-secondary rounded-lg overflow-hidden">
+    <div class="p-4">
+      <div class="space-y-4">
+        {{#each stats.recentCompletions}}
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium">Completed</p>
+            <p class="text-sm text-muted-foreground">{{this.time}}</p>
+          </div>
+          <p class="text-sm text-muted-foreground">{{fromNow this.date}}</p>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="bg-muted rounded-lg p-8 text-center">
+    <p class="text-muted-foreground">No recent activity</p>
+  </div>
+  {{/if}}
+</div>
+
+{{!-- Progress Overview --}}
+<div>
+  <h2 class="text-xl font-semibold mb-4">Progress Overview</h2>
+  <div class="bg-card border border-secondary rounded-lg p-6">
+    <div class="space-y-4">
+      <div>
+        <p class="text-sm text-muted-foreground">Days since creation</p>
+        <p class="font-medium">{{stats.daysSinceCreation}} days</p>
+      </div>
+      <div>
+        <p class="text-sm text-muted-foreground">Expected completions ({{habit.frequency}})</p>
+        <p class="font-medium">{{stats.expectedCompletions}}</p>
+      </div>
+      <div>
+        <p class="text-sm text-muted-foreground">Actual completions</p>
+        <p class="font-medium">{{stats.totalCompletions}}</p>
+      </div>
+      <div class="pt-4 border-t border-border">
+        <p class="text-sm text-muted-foreground">Completion rate</p>
+        <div class="mt-2 relative pt-1">
+          <div class="overflow-hidden h-2 text-xs flex rounded bg-muted">
+            <div style="width: {{stats.completionRate}}%"
+              class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary">
+            </div>
+          </div>
+          <p class="mt-1 text-sm font-medium">{{stats.completionRate}}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
