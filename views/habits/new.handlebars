@@ -1,0 +1,69 @@
+<div class="mb-6">
+  <a href="/habits" class="text-primary hover:text-primary/80"><- Back to habits</a>
+      <h1 class="mt-4">Create New Habit</h1>
+      <p class="text-muted-foreground mt-2">Start tracking a new habit and build your streak!</p>
+</div>
+
+<form action="/habits/new" method="post" class="space-y-6">
+  <div class="space-y-2">
+    <label for="name" class="text-sm font-medium">
+      Habit name
+      <span class="text-destructive">*</span>
+    </label>
+    <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" value="{{formData.name}}" />
+    {{#each errors}}
+    {{#if (eq this.path.[0] "name")}}
+    <p class="text-destructive text-sm">{{this.message}}</p>
+    {{/if}}
+    {{/each}}
+  </div>
+
+  <div class="space-y-2">
+    <label for="description" class="text-sm font-medium">
+      Description
+      <span class="text-destructive">*</span>
+    </label>
+    <textarea name="description" id="description" required placeholder="Describe your habit in detail"
+      class="h-24">{{formData.description}}</textarea>
+    {{#each errors}}
+    {{#if (eq this.path.[0] "description")}}
+    <p class="text-destructive text-sm">{{this.message}}</p>
+    {{/if}}
+    {{/each}}
+  </div>
+
+  <div class="space-y-2">
+    <label for="frequency" class="text-sm font-medium">
+      Frequency
+      <span class="text-destructive">*</span>
+    </label>
+    <select name="frequency" id="frequency" required>
+      <option value="" {{#unless formData.frequency}}selected{{/unless}} disabled>Select frequency</option>
+      <option value="daily" {{#if (eq formData.frequency "daily" )}}selected{{/if}}>Daily 🌞</option>
+      <option value="weekly" {{#if (eq formData.frequency "weekly" )}}selected{{/if}}>Weekly 📅</option>
+      <option value="monthly" {{#if (eq formData.frequency "monthly" )}}selected{{/if}}>Monthly 📆</option>
+    </select>
+    {{#each errors}}
+    {{#if (eq this.path.[0] "frequency")}}
+    <p class="text-destructive text-sm">{{this.message}}</p>
+    {{/if}}
+    {{/each}}
+  </div>
+
+  {{#if errors}}
+  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+    <p class="text-destructive text-sm font-medium">Please fix the errors above</p>
+  </div>
+  {{/if}}
+
+  <div class="flex justify-end gap-4">
+    <a href="/habits"
+      class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+      Cancel
+    </a>
+    <button type="submit"
+      class="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-colors">
+      Create Habit
+    </button>
+  </div>
+</form>

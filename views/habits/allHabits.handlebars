@@ -1,51 +1,60 @@
-<h1>Your habits</h1>
-
-<div class="mb-10">
-  <h2>Create a new habit</h2>
-  <p class="text-lg font-medium text-muted-foreground">
-    Start tracking a new habit and build your streak!
-  </p>
-
-  <form action="/habits" method="post">
-    <label for="name">Habit name</label>
-    <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" />
-
-    <label for="description">Description</label>
-    <input type="text" name="description" id="description" required placeholder="Describe your habit in detail" />
-
-    <label for="frequency">Frequency</label>
-    <select name="frequency" id="frequency" required class="">
-      <option value="" selected disabled>Select frequency</option>
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
-    </select>
-
-    <button type="submit">Create habit</button>
-  </form>
-
-  {{#if errors}}
-  {{#each errors}}
-  <p class="text-destructive text-sm font-semibold">{{this.message}}</p>
-  {{/each}}
-  {{/if}}
-
-  {{#if rootError}}
-  <p class="text-destructive text-sm font-semibold">{{{rootError}}}</p>
-  {{/if}}
+{{!-- Header Section --}}
+<div class="mb-8">
+  <a href="/dashboard" class="text-primary hover:text-primary/80"><- Back to dashboard</a>
+      <div class="flex items-center justify-between mt-4">
+        <h1>Your Habits</h1>
+        <a href="/habits/new"
+          class="px-4 py-2 bg-primary text-sm text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground/90 rounded-md transition-colors">
+          Create New Habit
+        </a>
+      </div>
 </div>
 
-{{#if habits.length}}
-<div class="mt-10">
-  <h2>Active habits <span class="text-primary text-base">( {{habits.length}} )</span></h2>
+{{!-- Active Habits Section --}}
+<div class="mb-12">
+  <div class="flex items-center justify-between mb-4">
+    <h2>Active Habits
+      <span class="text-primary text-base">
+        ( {{activeHabits.length}} )
+      </span>
+    </h2>
+  </div>
 
+  {{#if activeHabits.length}}
   <div class="grid grid-cols-1 gap-5">
-    {{#each habits}}
+    {{#each activeHabits}}
     {{> habitCard this}}
     {{/each}}
   </div>
-
+  {{else}}
+  <div class="bg-muted rounded-lg p-8 text-center">
+    <p class="text-sm text-muted-foreground">No active habits yet</p>
+    <a href="/habits/new" class="text-primary hover:text-primary/80 mt-2 inline-block">
+      Create your first habit ->
+    </a>
+  </div>
+  {{/if}}
 </div>
-{{else}}
-<p class="text-muted-foreground">No habits to show</p>
-{{/if}}
+
+{{!-- Inactive Habits Section --}}
+<div>
+  <div class="flex items-center justify-between mb-4">
+    <h2>Inactive Habits
+      <span class="text-muted-foreground text-base">
+        ( {{inactiveHabits.length}} )
+      </span>
+    </h2>
+  </div>
+
+  {{#if inactiveHabits.length}}
+  <div class="grid grid-cols-1 gap-5">
+    {{#each inactiveHabits}}
+    {{> habitCard this}}
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="bg-muted rounded-lg p-8 text-center">
+    <p class="text-sm text-muted-foreground">No inactive habits</p>
+  </div>
+  {{/if}}
+</div>

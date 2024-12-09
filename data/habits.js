@@ -1,12 +1,13 @@
 import { ObjectId } from "mongodb";
 
-import { habits } from "../config/collections.js";
+import { completions, habits } from "../config/collections.js";
 import {
 	habitSchema,
 	habitIdSchema,
 	updateHabitSchema,
 	habitStatusSchema,
 } from "../schemas/habits.js";
+import { calculateNextAvailable, canMarkComplete } from "../helpers.js";
 
 export const createHabit = async (userId, data) => {
 	const validatedData = habitSchema.parse(data);
@@ -151,4 +152,30 @@ export const getActiveStreaks = async (userId) => {
 		.toArray();
 
 	return activeStreaks;
+};
+
+export const getHabitDetails = async (habitId, userId) => {
+	const habit = await getHabitById(habitId, userId);
+
+	const completionsCollection = await completions();
+
+	const lastCompletion = await completionsCollection.findOne(
+		{
+			habitId: habit._id,
+			userId: ObjectId.createFromHexString(userId),
+		},
+		{ sort: { date: -1 }, projection: { date: 1 } }
+	);
+
+	const nextAvailable = lastCompletion
+		? calculateNextAvailable(lastCompletion.date, habit.frequency)
+		: null;
+
+	return {
+		...habit,
+		canComplete: await canMarkComplete(habit, userId),
+		lastCompleted: lastCompletion ? lastCompletion.date : null,
+		nextAvailable: nextAvailable ? nextAvailable.toDate() : null,
+		totalCompletions: habit.totalCompletions,
+	};
 };

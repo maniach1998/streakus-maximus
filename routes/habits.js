@@ -7,6 +7,7 @@ import {
 	getUserHabits,
 	getHabitById,
 	updateHabit,
+	getHabitDetails,
 } from "../data/habits.js";
 import { getHabitStats } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
@@ -15,69 +16,95 @@ const router = Router();
 
 router.use(requireAuth);
 
+router.route("/").get(async (req, res) => {
+	try {
+		// TODO: validate query status, and redirect to proper query status page
+		const [activeHabits, inactiveHabits] = await Promise.all([
+			getUserHabits(req.session.user._id, "active"),
+			getUserHabits(req.session.user._id, "inactive"),
+		]);
+
+		const activeHabitsWithStatus = await Promise.all(
+			activeHabits.map(async (habit) => ({
+				...habit,
+				canComplete: await canMarkComplete(habit, req.session.user._id),
+			}))
+		);
+
+		return res.render("habits/allHabits", {
+			title: "Your Habits",
+			activeHabits: activeHabitsWithStatus,
+			inactiveHabits,
+		});
+	} catch (err) {
+		return res.status(err.cause || 500).render("error", {
+			title: "Error",
+			code: err.cause || 500,
+			message: err.message || "Internal server error",
+		});
+	}
+});
+
 router
-	.route("/")
+	.route("/new")
 	.get(async (req, res) => {
-		try {
-			// TODO: validate query status, and redirect to proper query status page
-			const status = req.query.status || "active";
-			const habits = await getUserHabits(req.session.user._id, status);
-
-			const habitsWithStatus = await Promise.all(
-				habits.map(async (habit) => ({
-					...habit,
-					canComplete: await canMarkComplete(habit, req.session.user._id),
-				}))
-			);
-
-			return res.render("habits/allHabits", {
-				title: "Habits",
-				habits: habitsWithStatus,
-			});
-		} catch (err) {
-			return res.status(err.cause || 500).json({
-				success: false,
-				message: err.message || "Internal server error",
-			});
-		}
+		return res.render("habits/new", {
+			title: "Create a new habit",
+			formData: {},
+			errors: [],
+		});
 	})
 	.post(async (req, res) => {
 		try {
 			const newHabit = await createHabit(req.session.user._id, req.body);
 
-			// TODO: redirect to same page or to /:id
-			return res.status(201).json({ success: true, habit: newHabit });
+			// clear any stored form data
+			delete req.session.formData;
+			delete req.session.errors;
+
+			return res.redirect(`/habits/${newHabit._id}`);
 		} catch (err) {
+			// Store the form data to repopulate the form
+			req.session.formData = req.body;
+
 			if (err instanceof z.ZodError) {
-				return res.status(400).render("habits/allHabits", {
-					title: "Habits",
-					success: false,
+				req.session.errors = err.errors;
+
+				return res.status(400).render("habits/new", {
+					title: "Create New Habit",
+					formData: req.body,
 					errors: err.errors,
 				});
 			} else {
-				return res.status(err.cause || 500).render("habits/allHabits", {
-					title: "Habits",
-					success: false,
-					message: err.message || "Internal server error",
+				req.session.errors = [
+					{
+						message: err.message || "Failed to create habit",
+					},
+				];
+
+				return res.status(err.cause || 500).render("habits/new", {
+					title: "Create New Habit",
+					formData: req.body,
+					errors: [
+						{
+							message: err.message || "Failed to create habit",
+						},
+					],
 				});
 			}
 		}
 	});
-
-// TODO: add templates and routes for creating new habit
 
 // TODO: add templates for updating habit
 router
 	.route("/:id")
 	.get(async (req, res) => {
 		try {
-			const habit = await getHabitById(req.params.id, req.session.user._id);
-			const canComplete = await canMarkComplete(habit, req.session.user._id);
+			const habit = await getHabitDetails(req.params.id, req.session.user._id);
 
 			return res.render("habits/habit", {
 				title: `${habit.name} ${habit.streak}🔥`,
 				habit,
-				canComplete,
 			});
 		} catch (err) {
 			if (err instanceof z.ZodError) {

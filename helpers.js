@@ -36,6 +36,22 @@ export const canMarkComplete = async (habit, userId) => {
 	}
 };
 
+export const calculateNextAvailable = (lastCompletionDate, frequency) => {
+	if (!lastCompletionDate) return null;
+
+	const date = dayjs(lastCompletionDate);
+	switch (frequency) {
+		case "daily":
+			return date.add(1, "day").startOf("day");
+		case "weekly":
+			return date.add(1, "week").startOf("week");
+		case "monthly":
+			return date.add(1, "month").startOf("month");
+		default:
+			return null;
+	}
+};
+
 export const calculateStreak = async (habit, userId) => {
 	const completionsCollection = await completions();
 	const allCompletions = await completionsCollection

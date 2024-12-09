@@ -1,32 +1,91 @@
-<h1>{{habit.name}}</h1>
-<p>{{habit.description}}</p>
-<p class="text-sm text-muted-foreground">Created at {{formatDate habit.createdAt}}</p>
+{{!-- Header Section --}}
+<div class="mb-8">
+  <a href="/habits" class="text-primary hover:text-primary/80 transition-colors"><- Back to habits</a>
+      <div class="mt-4">
+        <h1>{{habit.name}}</h1>
+        <p class="text-muted-foreground mt-2">{{habit.description}}</p>
+      </div>
+</div>
 
-<a href="/habits/{{habit._id}}/stats" class="hover:text-primary transition-colors">
-  View Stats ->
-</a>
-
-<div class="my-10 grid grid-cols-3">
-  <div class="col-span-1 justify-items-center">
-    <p class="font-medium text-sm">Frequency</p>
-    <p class="font-extrabold text-2xl">{{habit.frequency}}</p>
+{{!-- Quick Stats Grid --}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-card border border-secondary rounded-lg p-6">
+    <h3 class="text-sm font-medium text-muted-foreground mb-2">Frequency</h3>
+    <div class="flex items-center gap-2">
+      <span class="text-2xl font-bold capitalize">{{habit.frequency}}</span>
+      {{#if habit.frequency}}
+      {{#if (eq habit.frequency "daily")}}🌞{{/if}}
+      {{#if (eq habit.frequency "weekly")}}📅{{/if}}
+      {{#if (eq habit.frequency "monthly")}}📆{{/if}}
+      {{/if}}
+    </div>
   </div>
 
-  <div class="col-span-1 justify-items-center">
-    <p class="font-medium text-sm">Streak</p>
-    <p class="font-extrabold text-2xl"><span data-streak>{{habit.streak}}</span>🔥</p>
+  <div class="bg-card border border-secondary rounded-lg p-6">
+    <h3 class="text-sm font-medium text-muted-foreground mb-2">Current Streak</h3>
+    <p class="text-2xl font-bold"><span data-streak>{{habit.streak}}</span>🔥</p>
   </div>
 
-  <div class="col-span-1 justify-items-center">
-    <p class="font-medium text-sm">Completions</p>
-    <p class="font-extrabold text-2xl"><span data-completions>{{habit.totalCompletions}}</span>✅</p>
+  <div class="bg-card border border-secondary rounded-lg p-6">
+    <h3 class="text-sm font-medium text-muted-foreground mb-2">Total Completions</h3>
+    <p class="text-2xl font-bold"><span data-completions>{{habit.totalCompletions}}</span>✅</p>
   </div>
 </div>
 
-<button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
-  {{#if canComplete}}
-  Complete
-  {{else}}
-  Complete again {{habit.frequency}}
-  {{/if}}
-</button>
+{{!-- Action Section --}}
+<div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
+  <div class="flex-1">
+    <button onclick="markHabitComplete('{{habit._id}}')" data-complete-button
+      class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+      {{#unless habit.canComplete}}disabled{{/unless}}>
+      {{#if habit.canComplete}}
+      Complete
+      {{else}}
+      Complete again {{habit.frequency}}
+      {{/if}}
+    </button>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <a href="/habits/{{habit._id}}/stats"
+      class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+      <span>Detailed Stats -></span>
+    </a>
+  </div>
+</div>
+
+{{!-- Additional Info --}}
+<div class="bg-card border border-secondary rounded-lg p-6">
+  <div class="space-y-4">
+    <div>
+      <h3 class="text-sm font-medium text-muted-foreground">Status</h3>
+      <p class="mt-1 font-medium capitalize">
+        {{habit.status}}
+        {{#if (eq habit.status "active")}}
+        <span class="inline-block w-2 h-2 bg-green-500 rounded-full ml-2"></span>
+        {{else}}
+        <span class="inline-block w-2 h-2 bg-gray-500 rounded-full ml-2"></span>
+        {{/if}}
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-medium text-muted-foreground">Created</h3>
+      <p class="mt-1 font-medium">{{formatDate habit.createdAt}}</p>
+    </div>
+
+    {{#if habit.lastCompleted}}
+    <div>
+      <h3 class="text-sm font-medium text-muted-foreground">Last Completed</h3>
+      <p class="mt-1 font-medium">{{fromNow habit.lastCompleted}}</p>
+    </div>
+    {{/if}}
+
+    {{#if habit.nextAvailable}}
+    <div>
+      <h3 class="text-sm font-medium text-muted-foreground">Next Available</h3>
+      <p class="mt-1 font-medium">{{fromNow habit.nextAvailable}}</p>
+    </div>
+    {{/if}}
+  </div>
+</div>
