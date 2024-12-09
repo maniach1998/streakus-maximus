@@ -1,11 +1,13 @@
 <h1>Dashboard</h1>
 <h2>Welcome, {{user.firstName}}</h2>
 
-<h3 class="text-primary">Active Habits <span class="text-primary text-base">( {{habits.length}} )</span></h3>
-<a href="/habits" class="font-bold">All habits -></a>
+<div class="flex items-center justify-between mt-4">
+  <h3 class="text-primary">Active Habits <span class="text-primary text-base">( {{habits.length}} )</span></h3>
+  <a href="/habits" class="font-bold">All habits -></a>
+</div>
 
 {{#if habits.length}}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-5">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-5">
   {{#each habits}}
   {{> habitCard this}}
   {{/each}}
