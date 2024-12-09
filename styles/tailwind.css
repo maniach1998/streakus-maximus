@@ -36,7 +36,7 @@
 	}
 
 	main {
-		@apply px-4 py-20;
+		@apply px-4 pt-20 pb-10 max-w-6xl mx-auto;
 	}
 
 	h1 {
@@ -62,7 +62,8 @@
 	}
 
 	input,
-	select {
+	select,
+	textarea {
 		@apply flex h-10 w-full rounded-md px-3 py-2;
 		@apply border border-input bg-background text-base ring-offset-background;
 		@apply file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground;
