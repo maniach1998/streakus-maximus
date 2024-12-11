@@ -36,7 +36,7 @@
 	}
 
 	main {
-		@apply px-4 pt-20 pb-10 max-w-6xl mx-auto;
+		@apply px-4 pt-28 pb-10 max-w-6xl mx-auto;
 	}
 
 	h1 {
@@ -69,10 +69,30 @@
 		@apply file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground;
 		@apply placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
 	}
+
+	input[type="checkbox"] {
+		@apply h-4 w-4 shrink-0 rounded-md border border-primary ring-offset-background !important;
+		@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 !important;
+		@apply data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground !important;
+	}
 }
 
 @layer components {
 	.card {
 		@apply bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6;
+	}
+
+	.button {
+		@apply inline-flex items-center justify-center gap-2 rounded-md h-10 px-4 py-2;
+		@apply ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+		@apply whitespace-nowrap text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90;
+	}
+
+	.button-secondary {
+		@apply bg-secondary text-secondary-foreground focus-visible:ring-secondary hover:bg-secondary/90 !important;
+	}
+
+	.button-destructive {
+		@apply bg-destructive text-destructive-foreground focus-visible:ring-destructive hover:bg-destructive/90 !important;
 	}
 }

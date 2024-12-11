@@ -19,13 +19,14 @@
 <body>
 	<header class="fixed p-4 border-b border-muted bg-background w-full">
 		<nav>
-			<ul class="flex list-none gap-5">
+			<ul class="flex items-center list-none gap-5">
 				{{#if isAuthenticated}}
 				<li><a href="/dashboard">Dashboard</a></li>
-				<li><a href="/auth/logout">Log out</a></li>
+				<li><a href="/profile">Profile</a></li>
+				<li><a href="/auth/logout" class="button button-destructive">Log out</a></li>
 				{{else}}
 				<li><a href="/">Home</a></li>
-				<li><a href="/auth/login">Log in</a></li>
+				<li><a href="/auth/login" class="button button-secondary">Log in</a></li>
 				{{/if}}
 			</ul>
 		</nav>
