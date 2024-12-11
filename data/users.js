@@ -16,7 +16,10 @@ export const createUser = async (data) => {
 	const userExists = await usersCollection.findOne({
 		email: validatedData.email,
 	});
-	if (userExists) throw new Error("This user already exists!", { cause: 409 });
+	if (userExists)
+		throw new Error("An account with this email already exists!", {
+			cause: 409,
+		});
 
 	// hash the password
 	const salt = await bcrypt.genSalt(12);
@@ -35,15 +38,12 @@ export const createUser = async (data) => {
 		throw new Error("Something went wrong!", { cause: 500 });
 
 	const cleanedUser = {
-		_id: response.insertedId,
 		email: newUser.email,
 		firstName: newUser.firstName,
 		lastName: newUser.lastName,
-		createdAt: newUser.createdAt,
-		updatedAt: newUser.updatedAt,
 	};
 
-	return cleanedUser;
+	return { registered: true, user: cleanedUser };
 };
 
 export const findUserByEmail = async (email) => {
@@ -73,6 +73,8 @@ export const loginUser = async (data) => {
 	);
 	if (!confirmPassword)
 		throw new Error("Incorrect email or password!", { cause: 404 });
+
+	delete user.password;
 
 	return user;
 };

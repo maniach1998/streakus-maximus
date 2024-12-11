@@ -18,22 +18,38 @@ router
 		try {
 			const validatedData = userSchema.parse(req.body);
 
-			const newUser = await createUser(validatedData);
+			const { registered, user } = await createUser(validatedData);
 
-			// TODO: redirect to login page/setup token and redirect to dash
-			return res.json({
-				success: true,
-				user: newUser,
-			});
+			if (registered) {
+				req.session.isNewUser = registered;
+				req.session.newUser = user;
+
+				return res.redirect("/auth/login");
+			} else {
+				return res.status(500).render("auth/signup", {
+					title: "Sign Up",
+					error: { general: "Internal server error" },
+					...req.body,
+				});
+			}
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				return res
-					.status(400)
-					.render("auth/signup", { title: "Sign Up", errors: err.errors });
+				const errors = {};
+
+				err.errors.forEach((error) => {
+					errors[error.path[0]] = error.message;
+				});
+
+				return res.status(400).render("auth/signup", {
+					title: "Sign Up",
+					error: errors,
+					...req.body,
+				});
 			} else {
 				return res.status(err.cause || 500).render("auth/signup", {
 					title: "Sign Up",
-					rootError: err.message || "Internal server error",
+					error: { general: err.message || "Internal server error" },
+					...req.body,
 				});
 			}
 		}
@@ -45,7 +61,14 @@ router
 		const isAuthenticated = req.session.isAuthenticated;
 		if (isAuthenticated) return res.redirect("/dashboard");
 
-		return res.render("auth/login", { title: "Log in" });
+		const isNewUser = req.session.isNewUser;
+		const newUser = req.session.newUser;
+
+		// clear session data
+		delete req.session.isNewUser;
+		delete req.session.newUser;
+
+		return res.render("auth/login", { title: "Log in", isNewUser, newUser });
 	})
 	.post(async (req, res) => {
 		try {
@@ -60,13 +83,22 @@ router
 			return res.redirect("/dashboard");
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				return res
-					.status(400)
-					.render("auth/login", { title: "Log in", errors: err.errors });
+				const errors = {};
+
+				err.errors.forEach((error) => {
+					errors[error.path[0]] = error.message;
+				});
+
+				return res.status(400).render("auth/login", {
+					title: "Log in",
+					error: errors,
+					...req.body,
+				});
 			} else {
 				return res.status(err.cause || 500).render("auth/login", {
 					title: "Log in",
-					rootError: err.message || "Internal server error",
+					error: { general: err.message || "Internal server error" },
+					...req.body,
 				});
 			}
 		}

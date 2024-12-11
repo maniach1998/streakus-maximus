@@ -1,27 +1,59 @@
-<h1>Log in</h1>
-<p class="text-lg font-medium text-muted-foreground">
-  Login to your account, and see your tracked progress!
-</p>
+<div class="mb-8 text-center">
+  <h1>Welcome back</h1>
+  <p class="text-muted-foreground">
+    Login to your account to continue tracking your habits
+  </p>
 
-<form action="/auth/login" method="post">
-  <label for="email">Email address</label>
-  <input type="email" name="email" id="email" />
+  {{#if isNewUser}}
+  <div class="mt-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
+    <p class="text-primary font-medium">
+      Your account has been created, {{newUser.firstName}}! Please sign in to continue.
+    </p>
+  </div>
+  {{/if}}
+</div>
 
-  <label for="password">Password</label>
-  <input type="password" name="password" id="password" />
+<form action="/auth/login" method="POST" class="space-y-6">
+  <div class="space-y-2">
+    <label for="email" class="text-sm font-medium">
+      Email address
+      <span class="text-destructive">*</span>
+    </label>
+    <input type="email" name="email" id="email" value="{{email}}" required placeholder="name@example.com"
+      class="{{#if error.email}}border-destructive{{/if}}" />
+    {{#if error.email}}
+    <p class="text-destructive text-sm">{{error.email}}</p>
+    {{/if}}
+  </div>
 
-  <button type="submit">Login</button>
+  <div class="space-y-2">
+    <label for="password" class="text-sm font-medium">
+      Password
+      <span class="text-destructive">*</span>
+    </label>
+    <input type="password" name="password" id="password" value="{{password}}" required placeholder="Enter your password"
+      class="{{#if error.password}}border-destructive{{/if}}" />
+    {{#if error.password}}
+    <p class="text-destructive text-sm">{{error.password}}</p>
+    {{/if}}
+  </div>
+
+  {{#if error.general}}
+  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+    <p class="text-destructive text-sm font-medium">{{error.general}}</p>
+  </div>
+  {{/if}}
+
+  <button type="submit" class="w-full">
+    Sign in
+  </button>
 </form>
 
-{{#if errors }}
-{{#each errors}}
-<p class="text-destructive text-sm">{{this.message}}</p>
-{{/each}}
-{{/if}}
-
-{{#if rootError}}
-<p class="text-destructive text-sm">{{{rootError}}}</p>
-{{/if}}
-
-<p class="text-muted-foreground">Don&apos;t have an account? <a href="/auth/sign-up" class="hover:underline">Sign up</a>
-</p>
+<div class="mt-6">
+  <p class="text-center text-muted-foreground">
+    Don't have an account?
+    <a href="/auth/sign-up" class="text-primary hover:text-primary/80 hover:underline transition-colors ml-1">
+      Sign up
+    </a>
+  </p>
+</div>

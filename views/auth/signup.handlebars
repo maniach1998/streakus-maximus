@@ -1,32 +1,76 @@
-<h1>Sign up</h1>
-<p class="text-lg font-medium text-muted-foreground">
-	Create an account, and start tracking your habits!
-</p>
+<div class="mb-8 text-center">
+	<h1>Create an account</h1>
+	<p class="text-muted-foreground">
+		Start your journey to building better habits
+	</p>
+</div>
 
-<form action="/auth/sign-up" method="post">
-	<label for="firstName">First Name</label>
-	<input type="text" name="firstName" id="firstName" required />
 
-	<label for="lastName">Last Name</label>
-	<input type="text" name="lastName" id="lastName" required />
+<form action="/auth/sign-up" method="POST" class="space-y-6">
+	<div class="space-y-2">
+		<label for="firstName" class="text-sm font-medium">
+			First Name
+			<span class="text-destructive">*</span>
+		</label>
+		<input type="text" name="firstName" id="firstName" value="{{firstName}}" required placeholder="John"
+			class="{{#if error.firstName}}border-destructive{{/if}}" />
+		{{#if error.firstName}}
+		<p class="text-destructive text-sm font-medium">{{error.firstName}}</p>
+		{{/if}}
+	</div>
 
-	<label for="email">Email address</label>
-	<input type="email" name="email" id="email" required />
+	<div class="space-y-2">
+		<label for="lastName" class="text-sm font-medium">
+			Last Name
+			<span class="text-destructive">*</span>
+		</label>
+		<input type="text" name="lastName" id="lastName" value="{{lastName}}" required placeholder="Doe"
+			class="{{#if error.lastName}}border-destructive{{/if}}" />
+		{{#if error.lastName}}
+		<p class="text-destructive text-sm font-medium">{{error.lastName}}</p>
+		{{/if}}
+	</div>
 
-	<label for="password">Password</label>
-	<input type="password" name="password" id="password" />
+	<div class="space-y-2">
+		<label for="email" class="text-sm font-medium">
+			Email address
+			<span class="text-destructive">*</span>
+		</label>
+		<input type="email" name="email" id="email" value="{{email}}" required placeholder="name@example.com"
+			class="{{#if error.email}}border-destructive{{/if}}" />
+		{{#if error.email}}
+		<p class="text-destructive text-sm font-medium">{{error.email}}</p>
+		{{/if}}
+	</div>
 
-	<button type="submit">Create account</button>
+	<div class="space-y-2">
+		<label for="password" class="text-sm font-medium">
+			Password
+			<span class="text-destructive">*</span>
+		</label>
+		<input type="password" name="password" id="password" value="{{password}}" required
+			placeholder="Create a strong password" class="{{#if error.password}}border-destructive{{/if}}" />
+		{{#if error.password}}
+		<p class="text-destructive text-sm font-medium">{{error.password}}</p>
+		{{/if}}
+	</div>
+
+	{{#if error.general}}
+	<div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+		<p class="text-destructive text-sm font-medium">{{error.general}}</p>
+	</div>
+	{{/if}}
+
+	<button type="submit" class="w-full">
+		Create account
+	</button>
 </form>
 
-{{#if errors }}
-{{#each errors}}
-<p class="text-destructive text-sm">{{this.message}}</p>
-{{/each}}
-{{/if}}
-
-{{#if rootError}}
-<p class="text-destructive text-sm">{{{rootError}}}</p>
-{{/if}}
-
-<p class="text-muted-foreground">Already have an account? <a href="/auth/login" class="hover:underline">Log in</a></p>
+<div class="mt-6">
+	<p class="text-center text-muted-foreground">
+		Already have an account?
+		<a href="/auth/login" class="text-primary hover:text-primary/80 hover:underline transition-colors ml-1">
+			Log in
+		</a>
+	</p>
+</div>
