@@ -8,6 +8,14 @@ import { handlebarsHelpers } from "./handlebars.js";
 
 const app = express();
 const PORT = 3000;
+const rewriteUnsupportedBrowserMethods = (req, res, next) => {
+	if (req.body && req.body._method) {
+		req.method = req.body._method;
+		delete req.body._method;
+	}
+
+	next();
+};
 
 // handlebars setup
 app.engine(
@@ -26,6 +34,7 @@ app.set("views", "./views");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/public", express.static("public"));
+app.use(rewriteUnsupportedBrowserMethods);
 
 // setup session
 app.use(
