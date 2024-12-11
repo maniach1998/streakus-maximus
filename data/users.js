@@ -121,7 +121,7 @@ export const getUserProfile = async (userId) => {
 		monthly: userHabits.filter((habit) => habit.frequency === "monthly").length,
 	};
 	const recentActivity = allCompletions
-		.sort((a, b) => b.date - a.date)
+		.sort((a, b) => dayjs(b.date) - dayjs(a.date))
 		.slice(0, 5)
 		.map((comp) => ({ habitId: comp.habitId, date: comp.date }));
 
