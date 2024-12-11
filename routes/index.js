@@ -1,5 +1,5 @@
 import landingRoutes from "./landing.js";
-import userRoutes from "./users.js";
+import authRoutes from "./users.js";
 import dashboardRoutes from "./dashboard.js";
 import habitRoutes from "./habits.js";
 import profileRoutes from "./profile.js";
@@ -8,10 +8,10 @@ import apiRoutes from "./api/api.js";
 
 export default (app) => {
 	app.use("/", landingRoutes);
-	app.use("/auth", userRoutes);
+	app.use("/auth", authRoutes);
 	app.use("/dashboard", dashboardRoutes);
 	app.use("/habits", habitRoutes);
-	app.use("/profile", profileRoutes);
+	app.use("/", profileRoutes);
 
 	app.use("/api", apiRoutes);
 

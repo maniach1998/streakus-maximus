@@ -7,6 +7,7 @@ import {
 	userEmailSchema,
 	userSchema,
 	loginSchema,
+	userSettingsSchema,
 } from "../schemas/users.js";
 import { users, habits, completions } from "../config/collections.js";
 
@@ -52,11 +53,11 @@ export const findUserByEmail = async (email) => {
 	const validatedData = userEmailSchema.parse({ email });
 	const usersCollection = await users();
 
-	// find the user
-	const userExists = await usersCollection.findOne({
-		email: validatedData.email,
-	});
-	if (!userExists) throw new Error("User not found!", { cause: 404 });
+	const userExists = await usersCollection.findOne(
+		{ email: validatedData.email },
+		{ projection: { password: 0 } }
+	);
+	if (!userExists) throw new Error("This user doesn't exist!", { cause: 404 });
 
 	return userExists;
 };
@@ -79,6 +80,23 @@ export const loginUser = async (data) => {
 	delete user.password;
 
 	return user;
+};
+
+export const updateUser = async (userId, data) => {
+	const validatedId = userIdSchema.parse({ _id: userId });
+	const validatedData = userSettingsSchema.parse(data);
+	const usersCollection = await users();
+
+	// update the user if they exist
+	const updatedUser = await usersCollection.findOneAndUpdate(
+		{ _id: ObjectId.createFromHexString(validatedId._id) },
+		{ $set: { ...validatedData, updatedAt: new Date().toISOString() } },
+		{ returnDocument: "after" }
+	);
+	if (!updatedUser) throw new Error("This user doesn't exist!", { cause: 404 });
+
+	delete updatedUser.password;
+	return { updated: true, user: updatedUser };
 };
 
 export const getUserProfile = async (userId) => {

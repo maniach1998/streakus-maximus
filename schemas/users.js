@@ -28,6 +28,13 @@ export const userSchema = z
 			.refine((password) => password.length > 8, {
 				message: "Password should be more than 8 characters long!",
 			}),
+		emailPreferences: z
+			.object({
+				achievements: z.boolean().default(false),
+				habitReminders: z.boolean().default(false),
+				streakAlert: z.boolean().default(false),
+			})
+			.default({}),
 	})
 	.required("All fields are required!");
 
@@ -52,4 +59,16 @@ export const userIdSchema = z.object({
 
 export const userEmailSchema = z.object({
 	email: z.string().email(),
+});
+
+export const userSettingsSchema = z.object({
+	firstName: userSchema.shape.firstName,
+	lastName: userSchema.shape.lastName,
+	emailPreferences: z
+		.object({
+			achievements: z.boolean().default(false),
+			habitReminders: z.boolean().default(false),
+			streakAlerts: z.boolean().default(false),
+		})
+		.default({}),
 });
