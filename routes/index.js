@@ -2,6 +2,7 @@ import landingRoutes from "./landing.js";
 import userRoutes from "./users.js";
 import dashboardRoutes from "./dashboard.js";
 import habitRoutes from "./habits.js";
+import profileRoutes from "./profile.js";
 
 import apiRoutes from "./api/api.js";
 
@@ -10,6 +11,7 @@ export default (app) => {
 	app.use("/auth", userRoutes);
 	app.use("/dashboard", dashboardRoutes);
 	app.use("/habits", habitRoutes);
+	app.use("/profile", profileRoutes);
 
 	app.use("/api", apiRoutes);
 
