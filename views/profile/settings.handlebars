@@ -1,0 +1,113 @@
+<div class="mb-8">
+  <a href="/profile" class="text-primary hover:text-primary/80"><- Back to profile</a>
+      <h1 class="mt-4">Account Settings</h1>
+      <p class="text-muted-foreground mt-2">Manage your account preferences and notifications</p>
+
+      {{#if wasUpdated}}
+      <div class="mt-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
+        <p class="text-primary text-sm font-medium">
+          Your changes have been saved!
+        </p>
+      </div>
+      {{/if}}
+</div>
+
+<form action="/settings" method="POST" class="space-y-8">
+  {{!-- Hidden method field for PUT request --}}
+  <input type="hidden" name="_method" value="PUT">
+
+  <div class="space-y-4">
+    <h2 class="text-xl font-semibold">Personal Information</h2>
+
+    <div class="space-y-2">
+      <label for="firstName" class="text-sm font-medium">
+        First Name
+        <span class="text-destructive">*</span>
+      </label>
+      <input type="text" name="firstName" id="firstName" value="{{user.firstName}}" required
+        class="w-full {{#if error.firstName}}border-destructive{{/if}}" />
+      {{#if error.firstName}}
+      <p class="text-destructive text-sm">{{error.firstName}}</p>
+      {{/if}}
+    </div>
+
+    <div class="space-y-2">
+      <label for="lastName" class="text-sm font-medium">
+        Last Name
+        <span class="text-destructive">*</span>
+      </label>
+      <input type="text" name="lastName" id="lastName" value="{{user.lastName}}" required
+        class="w-full {{#if error.lastName}}border-destructive{{/if}}" />
+      {{#if error.lastName}}
+      <p class="text-destructive text-sm">{{error.lastName}}</p>
+      {{/if}}
+    </div>
+
+    <div class="space-y-2">
+      <label for="email" class="text-sm font-medium">Email address</label>
+      <input type="email" id="email" value="{{user.email}}" disabled class="w-full" />
+      <p class="text-sm text-muted-foreground">
+        Contact support to change your email address
+      </p>
+    </div>
+
+    <div class="space-y-2">
+      <label for="password" class="text-sm font-medium">Password</label>
+      <input type="password" id="password" value="••••••••" disabled class="w-full" />
+      <p class="text-sm text-muted-foreground">
+        Contact support to reset your password
+      </p>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-xl font-semibold">Email Preferences</h2>
+
+    <div class="space-y-4">
+      <div class="flex items-start gap-3">
+        <input type="checkbox" name="emailPreferences.achievements" id="achievements" {{#if
+          user.emailPreferences.achievements}}checked{{/if}} class="mt-1.5" />
+        <div>
+          <label for="achievements" class="text-sm font-medium">Achievement Notifications</label>
+          <p class="text-sm text-muted-foreground">
+            Receive email notifications when you earn new badges or achievements
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input type="checkbox" name="emailPreferences.habitReminders" id="habitReminders" {{#if
+          user.emailPreferences.habitReminders}}checked{{/if}} class="mt-1.5" />
+        <div>
+          <label for="habitReminders" class="text-sm font-medium">Habit Reminders</label>
+          <p class="text-sm text-muted-foreground">
+            Get daily reminders for habits you haven't completed yet
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input type="checkbox" name="emailPreferences.streakAlerts" id="streakAlerts" {{#if
+          user.emailPreferences.streakAlerts}}checked{{/if}} class="mt-1.5" />
+        <div>
+          <label for="streakAlerts" class="text-sm font-medium">Streak Alerts</label>
+          <p class="text-sm text-muted-foreground">
+            Get notified when you're about to break a streak
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{#if error.general}}
+  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+    <p class="text-destructive text-sm">{{error.general}}</p>
+  </div>
+  {{/if}}
+
+  <div class="flex justify-end">
+    <button type="submit">
+      Save changes
+    </button>
+  </div>
+</form>
