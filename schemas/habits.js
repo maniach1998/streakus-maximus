@@ -33,6 +33,21 @@ export const habitIdSchema = z.object({
 		.refine((id) => ObjectId.isValid(id), { message: "Not a valid ObjectId!" }),
 });
 
+export const editHabitSchema = z.object({
+	name: habitSchema.shape.name,
+	description: habitSchema.shape.description,
+	frequency: z.enum(["daily", "weekly", "monthly"], {
+		errorMap: () => ({
+			message: "Frequency must be either 'daily', 'weekly', or 'monthly'",
+		}),
+	}),
+	status: z.enum(["active", "inactive"], {
+		errorMap: () => ({
+			message: "Status must be either 'active' or 'inactive'",
+		}),
+	}),
+});
+
 export const updateHabitSchema = habitSchema.partial();
 
 export const habitStatusSchema = z.enum([

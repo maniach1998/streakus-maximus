@@ -21,14 +21,20 @@
     </div>
   </div>
 
-  <div class="flex items-center justify-between mt-4">
-    <button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
-      {{#if canComplete}}
-      Complete
-      {{else}}
-      Complete again {{frequency}}
-      {{/if}}
-    </button>
+  <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 justify-between mt-4">
+    <div class="flex items-center gap-2">
+      <button onclick="markHabitComplete('{{_id}}')" data-complete-button {{#unless canComplete}}disabled{{/unless}}>
+        {{#if canComplete}}
+        Complete
+        {{else}}
+        Complete again {{frequency}}
+        {{/if}}
+      </button>
+
+      <a href="/habits/{{_id}}/edit" class="button button-secondary">
+        Edit
+      </a>
+    </div>
 
     <a href="/habits/{{_id}}/stats" class="text-sm text-muted-foreground hover:text-primary transition-colors">
       View Stats ->

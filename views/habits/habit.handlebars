@@ -1,13 +1,19 @@
-{{!-- Header Section --}}
 <div class="mb-8">
   <a href="/habits" class="text-primary hover:text-primary/80 transition-colors"><- Back to habits</a>
       <div class="mt-4">
         <h1>{{habit.name}}</h1>
         <p class="text-muted-foreground mt-2">{{habit.description}}</p>
+
+        {{#if wasUpdated}}
+        <div class="mt-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
+          <p class="text-primary text-sm font-medium">
+            Your changes have been saved!
+          </p>
+        </div>
+        {{/if}}
       </div>
 </div>
 
-{{!-- Quick Stats Grid --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
   <div class="bg-card border border-secondary rounded-lg p-6">
     <h3 class="text-sm font-medium text-muted-foreground mb-2">Frequency</h3>
@@ -32,9 +38,8 @@
   </div>
 </div>
 
-{{!-- Action Section --}}
 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
-  <div class="flex-1">
+  <div class="flex items-center gap-2">
     <button onclick="markHabitComplete('{{habit._id}}')" data-complete-button
       class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
       {{#unless habit.canComplete}}disabled{{/unless}}>
@@ -44,6 +49,10 @@
       Complete again {{habit.frequency}}
       {{/if}}
     </button>
+
+    <a href="/habits/{{habit._id}}/edit" class="button button-secondary">
+      Edit
+    </a>
   </div>
 
   <div class="flex items-center gap-4">
@@ -54,7 +63,6 @@
   </div>
 </div>
 
-{{!-- Additional Info --}}
 <div class="bg-card border border-secondary rounded-lg p-6">
   <div class="space-y-4">
     <div>

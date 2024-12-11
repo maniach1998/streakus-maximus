@@ -6,6 +6,7 @@ import {
 	habitIdSchema,
 	updateHabitSchema,
 	habitStatusSchema,
+	editHabitSchema,
 } from "../schemas/habits.js";
 import { calculateNextAvailable, canMarkComplete } from "../helpers.js";
 
@@ -72,6 +73,29 @@ export const getHabitById = async (habitId, userId) => {
 export const updateHabit = async (habitId, userId, data) => {
 	const validatedId = habitIdSchema.parse({ _id: habitId });
 	const validatedData = updateHabitSchema.parse(data);
+	const habitsCollection = await habits();
+
+	const updateData = {
+		...validatedData,
+		updatedAt: new Date().toISOString(),
+	};
+
+	const response = await habitsCollection.findOneAndUpdate(
+		{
+			_id: ObjectId.createFromHexString(validatedId._id),
+			userId: ObjectId.createFromHexString(userId),
+		},
+		{ $set: updateData },
+		{ returnDocument: "after" }
+	);
+	if (!response) throw new Error("Habit not found!", { cause: 404 });
+
+	return response;
+};
+
+export const editHabit = async (habitId, userId, data) => {
+	const validatedId = habitIdSchema.parse({ _id: habitId });
+	const validatedData = editHabitSchema.parse(data);
 	const habitsCollection = await habits();
 
 	const updateData = {

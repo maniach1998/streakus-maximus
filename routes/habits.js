@@ -1,14 +1,16 @@
 import { Router } from "express";
 import { z } from "zod";
 
-import { requireAuth } from "../middlewares/auth.js";
 import {
 	createHabit,
 	getUserHabits,
 	getHabitById,
-	updateHabit,
 	getHabitDetails,
+	editHabit,
 } from "../data/habits.js";
+import { editHabitSchema, habitIdSchema } from "../schemas/habits.js";
+
+import { requireAuth } from "../middlewares/auth.js";
 import { getHabitStats } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
 
@@ -96,25 +98,63 @@ router
 	});
 
 // TODO: add templates for updating habit
+router.route("/:id").get(async (req, res) => {
+	try {
+		const validatedId = habitIdSchema.parse({ _id: req.params.id });
+		const habit = await getHabitDetails(validatedId._id, req.session.user._id);
+
+		const wasUpdated = req.session.success;
+		delete req.session.success;
+
+		return res.render("habits/habit", {
+			title: `${habit.name} ${habit.streak}🔥`,
+			habit,
+			wasUpdated,
+		});
+	} catch (err) {
+		if (err instanceof z.ZodError) {
+			return res.status(400).json({
+				success: false,
+				errors: err.errors,
+			});
+		} else {
+			return res.status(err.cause || 500).json({
+				success: false,
+				message: err.message || "Internal server error",
+			});
+		}
+	}
+});
+
 router
-	.route("/:id")
+	.route("/:id/edit")
 	.get(async (req, res) => {
 		try {
-			const habit = await getHabitDetails(req.params.id, req.session.user._id);
+			const validatedId = habitIdSchema.parse({ _id: req.params.id });
+			const habit = await getHabitById(validatedId._id, req.session.user._id);
 
-			return res.render("habits/habit", {
-				title: `${habit.name} ${habit.streak}🔥`,
+			return res.render("habits/edit", {
+				title: `Edit ${habit.name}`,
 				habit,
 			});
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				return res.status(400).json({
-					success: false,
-					errors: err.errors,
+				const errors = {};
+
+				err.errors.forEach((error) => {
+					errors[error.path[0]] = error.message;
+				});
+
+				return res.status(400).render("error", {
+					title: "Error",
+					code: 400,
+					message: "Invalid habit ID",
+					errors,
 				});
 			} else {
-				return res.status(err.cause || 500).json({
-					success: false,
+				return res.status(err.cause || 500).render("error", {
+					title: "Error",
+					code: err.cause || 500,
 					message: err.message || "Internal server error",
 				});
 			}
@@ -122,26 +162,37 @@ router
 	})
 	.put(async (req, res) => {
 		try {
-			const updatedHabit = await updateHabit(
-				req.params.id,
+			const validatedId = habitIdSchema.parse({ _id: req.params.id });
+			const validatedData = editHabitSchema.parse(req.body);
+			const updatedHabit = await editHabit(
+				validatedId._id,
 				req.session.user._id,
-				req.body
+				validatedData
 			);
 
-			return res.json({
-				success: true,
-				habit: updatedHabit,
-			});
+			req.session.success = true;
+
+			return res.redirect(`/habits/${updatedHabit._id}`);
 		} catch (err) {
+			const _id = req.params.id;
+
 			if (err instanceof z.ZodError) {
-				return res.status(400).json({
-					success: false,
-					errors: err.errors,
+				const errors = {};
+
+				err.errors.forEach((error) => {
+					errors[error.path[0]] = error.message;
+				});
+
+				return res.status(400).render("habits/edit", {
+					title: "Edit Habit",
+					habit: { ...req.body, _id },
+					error: errors,
 				});
 			} else {
-				return res.status(err.cause || 500).json({
-					success: false,
-					message: err.message || "Internal server error",
+				return res.status(err.cause || 500).render("habits/edit", {
+					title: "Edit Habit",
+					habit: { ...req.body, _id },
+					error: { general: err.message || "Internal server error" },
 				});
 			}
 		}
@@ -149,8 +200,9 @@ router
 
 router.route("/:id/stats").get(async (req, res) => {
 	try {
-		const habit = await getHabitById(req.params.id, req.session.user._id);
-		const stats = await getHabitStats(req.params.id, req.session.user._id);
+		const validatedId = habitIdSchema.parse({ _id: req.params.id });
+		const habit = await getHabitById(validatedId._id, req.session.user._id);
+		const stats = await getHabitStats(validatedId._id, req.session.user._id);
 
 		return res.render("habits/stats", {
 			title: `${habit.name} - Stats`,
@@ -158,10 +210,25 @@ router.route("/:id/stats").get(async (req, res) => {
 			stats,
 		});
 	} catch (err) {
-		return res.status(err.cause || 500).render("error", {
-			title: "Error",
-			error: err.message || "Internal server error",
-		});
+		if (err instanceof z.ZodError) {
+			const errors = {};
+
+			err.errors.forEach((error) => {
+				errors[error.path[0]] = error.message;
+			});
+
+			return res.status(400).render("error", {
+				title: "Error",
+				code: 400,
+				message: "Invalid habit ID",
+				errors,
+			});
+		} else {
+			return res.status(err.cause || 500).render("error", {
+				title: "Error",
+				error: err.message || "Internal server error",
+			});
+		}
 	}
 });
 
