@@ -82,10 +82,14 @@
 		@apply bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6;
 	}
 
+	.card-link {
+		@apply text-inherit hover:opacity-80 !important;
+	}
+
 	.button {
-		@apply inline-flex items-center justify-center gap-2 rounded-md h-10 px-4 py-2;
-		@apply ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
-		@apply whitespace-nowrap text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90;
+		@apply inline-flex items-center justify-center gap-2 rounded-md h-10 px-4 py-2 !important;
+		@apply ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 !important;
+		@apply whitespace-nowrap text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 !important;
 	}
 
 	.button-secondary {

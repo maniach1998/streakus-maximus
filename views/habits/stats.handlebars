@@ -6,7 +6,6 @@
       </div>
 </div>
 
-{{!-- Stats Overview --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
   <div class="bg-card p-4 rounded-lg border border-secondary">
     <h3 class="text-sm font-medium text-muted-foreground">Current Streak</h3>
@@ -29,9 +28,9 @@
   </div>
 </div>
 
-{{!-- Recent Activity --}}
 <div class="mb-8">
-  <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+  <h2 class="text-xl font-semibold">Recent Activity</h2>
+  <p class="text-sm text-muted-foreground mb-4">Last 30 days</p>
   {{#if stats.recentCompletions.length}}
   <div class="bg-card border border-secondary rounded-lg overflow-hidden">
     <div class="p-4">
@@ -55,9 +54,9 @@
   {{/if}}
 </div>
 
-{{!-- Progress Overview --}}
 <div>
-  <h2 class="text-xl font-semibold mb-4">Progress Overview</h2>
+  <h2 class="text-xl font-semibold">Progress Overview</h2>
+  <p class="text-sm text-muted-foreground mb-4">Based on how often you&apos;ve completed the habit</p>
   <div class="bg-card border border-secondary rounded-lg p-6">
     <div class="space-y-4">
       <div>

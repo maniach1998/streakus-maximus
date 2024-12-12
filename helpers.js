@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js";
+import isBetween from "dayjs/plugin/isBetween.js";
 
 import { completions } from "./config/collections.js";
 
@@ -135,4 +136,64 @@ export const calculateStreak = async (habit, userId) => {
 	}
 
 	return streak;
+};
+
+export const getWeeklyRates = (completions, startDate, endDate) => {
+	const weeks = [];
+	let currentStart = startDate;
+
+	while (currentStart.isBefore(endDate)) {
+		const weekEnd = currentStart.add(6, "days");
+		const weeklyCompletions = completions.filter((comp) => {
+			const compDate = dayjs(comp.date);
+
+			return (
+				compDate.isAfter(currentStart, "day") ||
+				(compDate.isSame(currentStart, "day") &&
+					compDate.isBefore(weekEnd, "day")) ||
+				compDate.isSame(weekEnd, "day")
+			);
+		});
+
+		weeks.push({
+			startDate: currentStart.format("YYYY-MM-DD"),
+			endDate: weekEnd.format("YYYY-MM-DD"),
+			label: `Week ${currentStart.format("MMM D")}`,
+			completions: weeklyCompletions.length,
+		});
+
+		currentStart = weekEnd.add(1, "day");
+	}
+
+	return weeks;
+};
+
+export const getMonthlyRates = (completions, startDate, endDate) => {
+	const months = [];
+	let currentStart = startDate.startOf("month");
+
+	while (currentStart.isBefore(endDate)) {
+		const monthEnd = currentStart.endOf("month");
+		const monthlyCompletions = completions.filter((comp) => {
+			const compDate = dayjs(comp.date);
+
+			return (
+				compDate.isAfter(currentStart, "day") ||
+				(compDate.isSame(currentStart, "day") &&
+					compDate.isBefore(monthEnd, "day")) ||
+				compDate.isSame(monthEnd, "day")
+			);
+		});
+
+		months.push({
+			startDate: currentStart.format("YYYY-MM-DD"),
+			endDate: monthEnd.format("YYYY-MM-DD"),
+			label: currentStart.format("MMMM"),
+			completions: monthlyCompletions.length,
+		});
+
+		currentStart = currentStart.add(1, "month");
+	}
+
+	return months;
 };

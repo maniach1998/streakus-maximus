@@ -11,7 +11,7 @@ import {
 import { editHabitSchema, habitIdSchema } from "../schemas/habits.js";
 
 import { requireAuth } from "../middlewares/auth.js";
-import { getHabitStats } from "../data/stats.js";
+import { getHabitProgress, getHabitStats } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
@@ -227,6 +227,50 @@ router.route("/:id/stats").get(async (req, res) => {
 			return res.status(err.cause || 500).render("error", {
 				title: "Error",
 				error: err.message || "Internal server error",
+			});
+		}
+	}
+});
+
+router.route("/:id/progress").get(async (req, res) => {
+	try {
+		const validatedId = habitIdSchema.parse({ _id: req.params.id });
+		const timeframe = req.query.timeframe === "year" ? "year" : "month";
+
+		const data = await getHabitProgress(
+			validatedId._id,
+			req.session.user._id,
+			timeframe
+		);
+
+		console.log("data: ", {
+			calendarData: data.calendarData.length,
+			completionRates: data.completionRates,
+		});
+
+		return res.render("habits/progress", {
+			title: `${data.habit.name} Progress`,
+			...data,
+		});
+	} catch (err) {
+		if (err instanceof z.ZodError) {
+			const errors = {};
+
+			err.errors.forEach((error) => {
+				errors[error.path[0]] = error.message;
+			});
+
+			return res.status(400).render("error", {
+				title: "Error",
+				code: 400,
+				message: "Invalid habit ID",
+				errors,
+			});
+		} else {
+			return res.status(err.cause || 500).render("error", {
+				title: "Error",
+				code: err.cause || 500,
+				message: err.message || "Internal server error",
 			});
 		}
 	}
