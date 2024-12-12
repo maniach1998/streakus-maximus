@@ -1,38 +1,104 @@
 <h1>Dashboard</h1>
-<h2>Welcome, {{user.firstName}}</h2>
+<h2>Welcome, {{user.firstName}}😎</h2>
 
-<div class="flex items-center justify-between mt-4">
-  <h3 class="text-primary">Active Habits <span class="text-primary text-base">( {{habits.length}} )</span></h3>
-  <a href="/habits" class="font-bold">All habits -></a>
-</div>
+<div class="mt-8">
+  <h3 class="text-primary mb-2">Weekly Overview</h3>
+  <p class="text-muted-foreground text-sm mb-4">
+    This is a summary of your habits for the current week.
+  </p>
 
-{{#if habits.length}}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-5">
-  {{#each habits}}
-  {{> habitCard this}}
-  {{/each}}
-</div>
-{{else}}
-<div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
-  <p class="text-muted-foreground text-sm">No active habits 😔</p>
-</div>
-{{/if}}
+  {{#if weeklyOverview.totalHabits}}
+  <div class="card">
+    <div class="grid grid-cols-7 gap-4">
+      {{#each weeklyOverview.days}}
+      <div class="relative group">
+        <div class="text-center text-sm text-muted-foreground mb-2 
+                        {{#if isToday}}font-bold text-primary{{/if}}">
+          {{dayName}}
+        </div>
 
-<h3 class="text-primary">Current streaks</h3>
-{{#if hasStreaks}}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-5">
-  {{#each streaks}}
-  <div class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
-    <h4 class="font-medium">{{name}}</h4>
-    <div class="flex items-center gap-2 mt-2">
-      <span class="text-2xl font-bold">{{streak}}🔥</span>
-      <span class="text-muted-foreground text-sm">{{frequency}}</span>
+        <div class="aspect-square rounded-md border transition-all hover:opacity-80 cursor-help
+                {{#if (eq completedCount totalHabits)}}
+                  bg-primary border-primary
+                {{else}}
+                  {{#if completedCount}}
+                    bg-primary/50 border-primary/50
+                  {{else}}
+                    border-muted bg-muted/50
+                  {{/if}}
+                {{/if}}
+                {{#if isToday}}
+                  ring-2 ring-primary ring-offset-2
+                {{/if}}" title="{{completedCount}}/{{totalHabits}} habits completed">
+        </div>
+
+        <div class="absolute z-10 border border-secondary invisible group-hover:visible 
+                        bg-popover text-popover-foreground rounded-md shadow-lg 
+                        p-3 min-w-[250px] left-1/2 transform -translate-x-1/2 mt-2">
+          <p class="font-medium mb-1">{{date}}</p>
+          <p class="text-sm text-muted-foreground mb-2">
+            {{completedCount}}/{{totalHabits}} completed
+          </p>
+          {{#if completedHabits.length}}
+          <ul class="text-sm space-y-1">
+            {{#each completedHabits}}
+            <li class="flex items-center justify-between">
+              <span>✅ {{name}}</span>
+              <span class="text-muted-foreground">{{time}}</span>
+            </li>
+            {{/each}}
+          </ul>
+          {{else}}
+          <p class="text-sm text-muted-foreground">No habits completed</p>
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
     </div>
   </div>
-  {{/each}}
+  {{else}}
+  <div class="bg-muted rounded-md w-full h-20 flex items-center justify-center">
+    <p class="text-muted-foreground text-sm">No active habits to show 😔</p>
+  </div>
+  {{/if}}
 </div>
-{{else}}
-<div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
-  <p class="text-muted-foreground text-sm">No active streaks 😞</p>
+
+<div class="mt-8">
+  <div class="flex items-center justify-between">
+    <h3 class="text-primary">Active Habits <span class="text-primary text-base">( {{habits.length}} )</span></h3>
+    <a href="/habits" class="font-bold">All habits -></a>
+  </div>
+
+  {{#if habits.length}}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-5">
+    {{#each habits}}
+    {{> habitCard this}}
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
+    <p class="text-muted-foreground text-sm">No active habits 😔</p>
+  </div>
+  {{/if}}
 </div>
-{{/if}}
+
+<div class="mt-8">
+  <h3 class="text-primary">Current streaks</h3>
+  {{#if hasStreaks}}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-5">
+    {{#each streaks}}
+    <div class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
+      <h4 class="font-medium">{{name}}</h4>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="text-2xl font-bold">{{streak}}🔥</span>
+        <span class="text-muted-foreground text-sm">{{frequency}}</span>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="bg-muted rounded-md w-full h-20 flex items-center justify-center my-5">
+    <p class="text-muted-foreground text-sm">No active streaks 😞</p>
+  </div>
+  {{/if}}
+</div>

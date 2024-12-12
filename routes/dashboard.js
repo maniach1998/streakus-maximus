@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { requireAuth } from "../middlewares/auth.js";
 import { getActiveStreaks, getUserHabits } from "../data/habits.js";
+import { getWeeklyOverview } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
 
 const router = Router();
@@ -10,17 +11,16 @@ const router = Router();
 router.use(requireAuth);
 
 router.route("/").get(async (req, res) => {
-	const user = req.session.user;
-
 	try {
-		// get active habits and streaks parallely
-		const [activeHabits, activeStreaks] = await Promise.all([
-			getUserHabits(user._id, "active"),
-			getActiveStreaks(user._id),
+		const [habits, streaks, weeklyOverview] = await Promise.all([
+			getUserHabits(req.session.user._id, "active"),
+			getActiveStreaks(req.session.user._id),
+			getWeeklyOverview(req.session.user._id),
 		]);
-		// const activeHabits = await getUserHabits(user._id, "active");
+
+		// Add completion status to habits
 		const habitsWithStatus = await Promise.all(
-			activeHabits.map(async (habit) => ({
+			habits.map(async (habit) => ({
 				...habit,
 				canComplete: await canMarkComplete(habit, req.session.user._id),
 			}))
@@ -28,16 +28,18 @@ router.route("/").get(async (req, res) => {
 
 		return res.render("dashboard/dashboard", {
 			title: "Dashboard",
-			user,
+			user: req.session.user,
 			habits: habitsWithStatus,
-			streaks: activeStreaks,
-			hasStreaks: activeStreaks.length > 0,
+			streaks,
+			hasStreaks: streaks.length > 0,
+			weeklyOverview,
 		});
 	} catch (err) {
-		return res.status(err.cause || 500).render("dashboard/dashboard", {
-			title: "Dashboard",
-			user,
-			error: err.message || "Internal server error",
+		return res.status(err.cause || 500).render("error", {
+			title: "Error",
+			code: err.cause || 500,
+			message: err.message || "Internal server error",
+			error: err,
 		});
 	}
 });
