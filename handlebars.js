@@ -6,6 +6,15 @@ export const handlebarsHelpers = {
 	formatDate: (date) => {
 		return dayjs(date).format("MMM D, YYYY");
 	},
+	formatShortDate: (date) => {
+		return dayjs(date).format("D MMM");
+	},
+	formatOneDigitDate: (date) => {
+		return dayjs(date).format("D");
+	},
+	formatMonth: (date) => {
+		return dayjs(date).format("MMM");
+	},
 	fromNow: (date) => {
 		return dayjs(date).fromNow();
 	},

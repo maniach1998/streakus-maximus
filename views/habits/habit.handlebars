@@ -60,12 +60,11 @@
   </div>
 
   <div class="flex items-center gap-4">
-    <a href="/habits/{{habit._id}}/stats"
-      class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+    <a href="/habits/{{habit._id}}/stats" class="flex items-center gap-2 text-muted-foreground transition-colors">
       <span>Detailed Stats -></span>
     </a>
     <a href="/habits/{{habit._id}}/progress"
-      class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+      class="flex items-center gap-2 text-muted-foreground transition-colors {{#if habit.canComplete}}animate-pulse hover:animate-none{{/if}}">
       <span>View Progress -></span>
     </a>
   </div>
