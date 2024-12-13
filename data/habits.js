@@ -203,3 +203,30 @@ export const getHabitDetails = async (habitId, userId) => {
 		totalCompletions: habit.totalCompletions,
 	};
 };
+
+export const getHabitExportData = async (habitId, userId) => {
+	const completionsCollection = await completions();
+
+	const habit = await getHabitById(habitId, userId);
+	const habitCompletions = await completionsCollection
+		.find({
+			habitId: habit._id,
+			userId: ObjectId.createFromHexString(userId),
+		})
+		.sort({ date: 1 })
+		.toArray();
+
+	return {
+		name: habit.name,
+		description: habit.description,
+		frequency: habit.frequency,
+		status: habit.status,
+		currentStreak: habit.streak,
+		totalCompletions: habit.totalCompletions,
+		createdAt: habit.createdAt,
+		completions: habitCompletions.map((comp) => ({
+			date: comp.date,
+			time: comp.time,
+		})),
+	};
+};
