@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js";
-import isBetween from "dayjs/plugin/isBetween.js";
 
 import { completions } from "./config/collections.js";
 
@@ -11,6 +10,9 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 export const canMarkComplete = async (habit, userId) => {
+	// only allow active habits to be completed
+	if (habit.status === "inactive") return false;
+
 	const completionsCollection = await completions();
 	const lastCompletion = await completionsCollection.findOne(
 		{ habitId: habit._id, userId: ObjectId.createFromHexString(userId) },
