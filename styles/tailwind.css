@@ -32,11 +32,11 @@
 	}
 
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-gradient-to-tr from-background to-primary/10 bg-background text-foreground;
 	}
 
 	main {
-		@apply px-4 pt-28 pb-10 max-w-6xl mx-auto;
+		@apply px-4 pt-28 pb-10 max-w-6xl min-h-screen mx-auto;
 	}
 
 	h1 {

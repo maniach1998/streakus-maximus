@@ -35,7 +35,7 @@
     <p class="text-muted-foreground mb-4">Your habit completions over time</p>
     <div class="grid grid-cols-7 gap-2">
       {{#each calendarData}}
-      <div class="aspect-square rounded-sm flex flex-col items-center justify-center relative group hover:opacity-80 transition-opacity 
+      <div class="aspect-square rounded-sm flex flex-col items-center justify-center relative group hover:opacity-80 cursor-default transition-opacity 
         {{#if this.completed}}bg-primary text-primary-foreground{{else}}bg-secondary text-secondary-foreground{{/if}}">
         <span
           class="text-lg md:text-2xl font-extrabold {{#if this.completed}}underline underline-offset-4 decoration-2{{/if}}">

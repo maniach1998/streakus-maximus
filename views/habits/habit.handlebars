@@ -44,17 +44,21 @@
       class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
       {{#unless habit.canComplete}}disabled{{/unless}}>
       {{#if habit.canComplete}}
+      <i data-lucide="check" class="size-4"></i>
       Complete
       {{else}}
+      <i data-lucide="check-check" class="size-4"></i>
       Complete again {{habit.frequency}}
       {{/if}}
     </button>
 
     <a href="/habits/{{habit._id}}/edit" class="button button-secondary">
+      <i data-lucide="pen" class="size-4"></i>
       Edit
     </a>
 
     <a href="/api/habits/{{habit._id}}/export" class="button button-secondary" title="Export habit data as CSV">
+      <i data-lucide="file-text" class="size-4"></i>
       Export CSV
     </a>
   </div>
@@ -71,6 +75,12 @@
 </div>
 
 <div class="bg-card border border-secondary rounded-lg p-6">
+  {{#if habit.canComplete}}
+  <div class="mb-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
+    <p class="font-medium">You've got this! You can complete this habit today🚨</p>
+  </div>
+  {{/if}}
+
   <div class="space-y-4">
     <div>
       <h3 class="text-sm font-medium text-muted-foreground">Status</h3>
