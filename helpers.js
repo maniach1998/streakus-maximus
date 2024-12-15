@@ -140,6 +140,107 @@ export const calculateStreak = async (habit, userId) => {
 	return streak;
 };
 
+export const calculateAllStreaks = (completions, frequency) => {
+	if (!completions || completions.length === 0)
+		return {
+			allStreaks: [],
+			longestStreak: [],
+		};
+
+	// sort by oldest first
+	const sortedCompletions = completions.sort(
+		(a, b) => new Date(a.date) - new Date(b.date)
+	);
+
+	const streaks = [];
+	let currentStreak = {
+		duration: 1,
+		startDate: dayjs(sortedCompletions[0].date),
+		endDate: dayjs(sortedCompletions[0].date),
+		completions: [sortedCompletions[0]],
+	};
+
+	const areConsecutive = (date1, date2) => {
+		const d1 = dayjs(date1).startOf("day");
+		const d2 = dayjs(date2).startOf("day");
+
+		switch (frequency) {
+			case "daily":
+				return d2.diff(d1, "day") === 1;
+			case "weekly":
+				return d2.startOf("week").diff(d1.startOf("week"), "week") === 1;
+			case "monthly":
+				return d2.startOf("month").diff(d1.startOf("month"), "month") === 1;
+			default:
+				return false;
+		}
+	};
+
+	for (let i = 1; i < sortedCompletions.length; i++) {
+		const currentDate = dayjs(sortedCompletions[i].date);
+		const prevDate = dayjs(sortedCompletions[i - 1].date);
+
+		if (areConsecutive(prevDate, currentDate)) {
+			// continue the streak
+			currentStreak.duration++;
+			currentStreak.endDate = currentDate;
+			currentStreak.completions.push(sortedCompletions[i]);
+		} else {
+			// end current streak
+			streaks.push({
+				...currentStreak,
+				startDate: currentStreak.startDate.toISOString(),
+				endDate: currentStreak.endDate.toISOString(),
+				isActive: false,
+			});
+
+			// reset to start a new streak
+			currentStreak = {
+				duration: 1,
+				startDate: currentDate,
+				endDate: currentDate,
+				completions: [sortedCompletions[i]],
+			};
+		}
+	}
+
+	// add the last streak
+	streaks.push({
+		...currentStreak,
+		startDate: currentStreak.startDate.toISOString(),
+		endDate: currentStreak.endDate.toISOString(),
+		isActive: false,
+	});
+
+	// check if lastest streak is active
+	const lastStreak = streaks[streaks.length - 1];
+	const currentDate = dayjs();
+	const lastCompletionDate = dayjs(lastStreak.endDate);
+
+	switch (frequency) {
+		case "daily":
+			lastStreak.isActive = currentDate.diff(lastCompletionDate, "day") <= 1;
+			break;
+		case "weekly":
+			lastStreak.isActive = currentDate.diff(lastCompletionDate, "week") <= 1;
+			break;
+		case "monthly":
+			lastStreak.isActive = currentDate.diff(lastCompletionDate, "month") <= 1;
+			break;
+	}
+
+	return {
+		allStreaks: streaks.sort(
+			(a, b) => new Date(b.endDate) - new Date(a.endDate)
+		),
+		longestStreak: streaks.find(
+			(streak) =>
+				streak.duration ===
+				Math.max(...streaks.map((streak) => streak.duration))
+		),
+	};
+};
+
 export const getWeeklyRates = (completions, startDate, endDate) => {
 	const weeks = [];
 	let currentStart = startDate;

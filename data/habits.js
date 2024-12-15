@@ -8,7 +8,11 @@ import {
 	habitStatusSchema,
 	editHabitSchema,
 } from "../schemas/habits.js";
-import { calculateNextAvailable, canMarkComplete } from "../helpers.js";
+import {
+	calculateAllStreaks,
+	calculateNextAvailable,
+	canMarkComplete,
+} from "../helpers.js";
 
 export const createHabit = async (userId, data) => {
 	const validatedData = habitSchema.parse(data);
@@ -176,6 +180,30 @@ export const getActiveStreaks = async (userId) => {
 		.toArray();
 
 	return activeStreaks;
+};
+
+export const getHabitStreaks = async (habitId, userId) => {
+	const habit = await getHabitById(habitId, userId);
+
+	const completionsCollection = await completions();
+	const allCompletions = await completionsCollection
+		.find({
+			habitId: ObjectId.createFromHexString(habitId),
+			userId: ObjectId.createFromHexString(userId),
+		})
+		.sort({ date: -1 })
+		.toArray();
+
+	const { allStreaks, longestStreak } = calculateAllStreaks(
+		allCompletions,
+		habit.frequency
+	);
+
+	return {
+		habit,
+		allStreaks,
+		longestStreak,
+	};
 };
 
 export const getHabitDetails = async (habitId, userId) => {

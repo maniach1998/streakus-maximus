@@ -5,7 +5,11 @@ import isBetween from "dayjs/plugin/isBetween.js";
 
 import { completions, habits } from "../config/collections.js";
 import { getHabitById } from "./habits.js";
-import { getMonthlyRates, getWeeklyRates } from "../helpers.js";
+import {
+	calculateAllStreaks,
+	getMonthlyRates,
+	getWeeklyRates,
+} from "../helpers.js";
 
 dayjs.extend(relativeTime);
 dayjs.extend(isBetween);
@@ -23,6 +27,11 @@ export const getHabitStats = async (habitId, userId) => {
 		})
 		.sort({ date: -1 })
 		.toArray();
+
+	const { longestStreak } = calculateAllStreaks(
+		habitCompletions,
+		habit.frequency
+	);
 
 	// Calculate days since habit creation
 	const createdAt = dayjs(habit.createdAt).startOf("day");
@@ -51,15 +60,15 @@ export const getHabitStats = async (habitId, userId) => {
 
 	// Get recent completions (last 30 days)
 	const thirtyDaysAgo = today.subtract(30, "day");
-	const recentCompletions = habitCompletions.filter((completion) =>
-		dayjs(completion.date).isAfter(thirtyDaysAgo)
-	);
+	const recentCompletions = habitCompletions
+		.filter((completion) => dayjs(completion.date).isAfter(thirtyDaysAgo))
+		.sort((a, b) => new Date(b.date) - new Date(a.date));
 
 	return {
 		totalCompletions: habitCompletions.length,
 		completionRate,
 		currentStreak: habit.streak,
-		longestStreak: habit.longestStreak || habit.streak,
+		longestStreak: longestStreak.duration || habit.streak,
 		recentCompletions: recentCompletions.map((completion) => ({
 			...completion,
 			fromNow: dayjs(completion.date).fromNow(),

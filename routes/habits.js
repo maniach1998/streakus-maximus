@@ -7,6 +7,7 @@ import {
 	getHabitById,
 	getHabitDetails,
 	editHabit,
+	getHabitStreaks,
 } from "../data/habits.js";
 import { editHabitSchema, habitIdSchema } from "../schemas/habits.js";
 
@@ -227,6 +228,44 @@ router.route("/:id/stats").get(async (req, res) => {
 			return res.status(err.cause || 500).render("error", {
 				title: "Error",
 				error: err.message || "Internal server error",
+			});
+		}
+	}
+});
+
+router.route("/:id/streaks").get(async (req, res) => {
+	try {
+		const validatedId = habitIdSchema.parse({ _id: req.params.id });
+		const { habit, allStreaks, longestStreak } = await getHabitStreaks(
+			validatedId._id,
+			req.session.user._id
+		);
+
+		return res.render("habits/streaks", {
+			title: `${habit.name} Streaks`,
+			habit,
+			allStreaks,
+			longestStreak,
+		});
+	} catch (err) {
+		if (err instanceof z.ZodError) {
+			const errors = {};
+
+			err.errors.forEach((error) => {
+				errors[error.path[0]] = error.message;
+			});
+
+			return res.status(400).render("error", {
+				title: "Error",
+				code: 400,
+				message: "Invalid habit ID",
+				errors,
+			});
+		} else {
+			return res.status(err.cause || 500).render("error", {
+				title: "Error",
+				code: err.cause || 500,
+				message: err.message || "Internal server error",
 			});
 		}
 	}
