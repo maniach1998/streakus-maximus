@@ -33,7 +33,8 @@
 
   <div class="card">
     <h3 class="mb-1">Calendar View</h3>
-    <p class="text-muted-foreground mb-4">Your habit completions over time</p>
+    <p class="text-muted-foreground mb-4">Your habit completions over the last {{#if (eq timeframe 'month')}}30
+      days{{else}}year{{/if}}</p>
     <div class="grid grid-cols-7 gap-2">
       {{#each calendarData}}
       <div class="aspect-square rounded-sm flex flex-col items-center justify-center relative group hover:opacity-80 cursor-default transition-opacity 

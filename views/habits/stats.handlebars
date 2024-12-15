@@ -44,7 +44,45 @@
   </div>
 </div>
 
-<div class="mb-8">
+<div id="progress-overview" class="mb-8">
+  <h2 class="text-xl font-semibold">Progress Overview</h2>
+  <p class="text-sm text-muted-foreground mb-4">Based on how often you&apos;ve completed the habit</p>
+  <div class="card">
+    <div class="space-y-4">
+      <div>
+        <p class="text-sm text-muted-foreground">Days since creation</p>
+        <p class="font-medium">{{stats.daysSinceCreation}} days</p>
+      </div>
+      <div>
+        <p class="text-sm text-muted-foreground">Expected completions ({{habit.frequency}})</p>
+        <p class="font-medium">{{stats.expectedCompletions}}</p>
+      </div>
+      <div>
+        <p class="text-sm text-muted-foreground">Actual completions</p>
+        <p class="font-medium">{{stats.totalCompletions}}</p>
+      </div>
+      <div class="pt-4 border-t border-border">
+        <p class="text-sm text-muted-foreground">Completion rate</p>
+        <div class="my-4 lg:my-8 relative w-full max-w-3xl lg:max-w-md mx-auto">
+          <canvas id="completionPieChart" data-completions="{{stats.totalCompletions}}"
+            data-expected="{{stats.expectedCompletions}}">
+          </canvas>
+        </div>
+
+        <div class="mt-2 relative pt-1">
+          <div class="overflow-hidden h-2 text-xs flex rounded bg-muted">
+            <div style="width: {{stats.completionRate}}%"
+              class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary">
+            </div>
+          </div>
+          <p class="mt-1 text-sm font-medium">{{stats.completionRate}}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
   <h2 class="text-xl font-semibold">Recent Activity</h2>
   <p class="text-sm text-muted-foreground mb-4">Last 30 days</p>
   {{#if stats.recentCompletions.length}}
@@ -68,35 +106,5 @@
   {{/if}}
 </div>
 
-<div id="progress-overview">
-  <h2 class="text-xl font-semibold">Progress Overview</h2>
-  <p class="text-sm text-muted-foreground mb-4">Based on how often you&apos;ve completed the habit</p>
-  <div class="card">
-    <div class="space-y-4">
-      <div>
-        <p class="text-sm text-muted-foreground">Days since creation</p>
-        <p class="font-medium">{{stats.daysSinceCreation}} days</p>
-      </div>
-      <div>
-        <p class="text-sm text-muted-foreground">Expected completions ({{habit.frequency}})</p>
-        <p class="font-medium">{{stats.expectedCompletions}}</p>
-      </div>
-      <div>
-        <p class="text-sm text-muted-foreground">Actual completions</p>
-        <p class="font-medium">{{stats.totalCompletions}}</p>
-      </div>
-      <div class="pt-4 border-t border-border">
-        <p class="text-sm text-muted-foreground">Completion rate</p>
-        {{!-- TODO: add pie chart here --}}
-        <div class="mt-2 relative pt-1">
-          <div class="overflow-hidden h-2 text-xs flex rounded bg-muted">
-            <div style="width: {{stats.completionRate}}%"
-              class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary">
-            </div>
-          </div>
-          <p class="mt-1 text-sm font-medium">{{stats.completionRate}}%</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/public/js/completionPieChart.js"></script>
