@@ -1,4 +1,7 @@
+const SERVER_URL = process.env.MONGODB_SERVER_URL;
+const DATABASE = process.env.MONGODB_DATABASE;
+
 export const mongoConfig = {
-	serverUrl: "mongodb://127.0.0.1:27017/",
-	database: "Streakus_Maximus",
+	serverUrl: SERVER_URL,
+	database: DATABASE,
 };

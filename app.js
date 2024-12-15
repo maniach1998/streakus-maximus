@@ -7,7 +7,7 @@ import { setUserDefaults } from "./middlewares/auth.js";
 import { handlebarsHelpers } from "./handlebars.js";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
 	if (req.body && req.body._method) {
 		req.method = req.body._method;
@@ -40,7 +40,7 @@ app.use(rewriteUnsupportedBrowserMethods);
 app.use(
 	session({
 		name: "StreakusMaximus",
-		secret: "very_secret_key_here",
+		secret: process.env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
