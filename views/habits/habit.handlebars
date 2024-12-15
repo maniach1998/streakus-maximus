@@ -40,9 +40,8 @@
 
 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
   <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
-    <button onclick="markHabitComplete('{{habit._id}}')" data-complete-button
-      class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-      {{#unless habit.canComplete}}disabled{{/unless}}>
+    <button onclick="markHabitComplete('{{habit._id}}')" data-complete-button class="button" {{#unless
+      habit.canComplete}}disabled{{/unless}}>
       {{#if habit.canComplete}}
       <i data-lucide="check" class="size-4"></i>
       Complete

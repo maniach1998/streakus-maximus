@@ -103,8 +103,12 @@
   {{#if hasStreaks}}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-5">
     {{#each streaks}}
-    <div class="bg-card border border-secondary rounded-lg text-card-foreground shadow-sm p-6">
-      <h4 class="font-medium">{{name}}</h4>
+    <div class="card">
+      <h4 class="font-medium">
+        <a href="/habits/{{_id}}/streaks" class="card-link inline-flex items-center justify-between gap-1">{{name}}
+          <i data-lucide="chevron-right" class="size-5"></i>
+        </a>
+      </h4>
       <div class="flex items-center gap-2 mt-2">
         <span class="text-2xl font-bold">{{streak}}🔥</span>
         <span class="text-muted-foreground text-sm">{{frequency}}</span>

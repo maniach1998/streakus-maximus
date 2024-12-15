@@ -22,6 +22,7 @@
   </div>
 </div>
 
+{{#if completionRates.length}}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
   <div class="card">
     <h3 class="mb-4">Completion Rate</h3>
@@ -52,6 +53,11 @@
     </div>
   </div>
 </div>
+{{else}}
+<div class="bg-muted rounded-lg p-8 text-center">
+  <p class="text-sm text-muted-foreground">No data available</p>
+</div>
+{{/if}}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
