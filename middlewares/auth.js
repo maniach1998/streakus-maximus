@@ -1,5 +1,7 @@
 export function requireAuth(req, res, next) {
 	if (!req.session.isAuthenticated) {
+		req.session.wasUnauthorized = true;
+
 		return res.redirect("/auth/login");
 	}
 	next();

@@ -75,12 +75,16 @@ router
 
 		const isNewUser = req.session.isNewUser;
 		const newUser = req.session.newUser;
+		const wasUnauthorized = req.session.wasUnauthorized;
 
 		// clear session data
 		delete req.session.isNewUser;
 		delete req.session.newUser;
+		delete req.session.wasUnauthorized;
 
-		return res.render("auth/login", { title: "Log in", isNewUser, newUser });
+		return res
+			.status(wasUnauthorized ? 401 : 200)
+			.render("auth/login", { title: "Log in", isNewUser, newUser });
 	})
 	.post(async (req, res) => {
 		try {
