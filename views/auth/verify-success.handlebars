@@ -1,0 +1,19 @@
+<div class="text-center">
+  <h1 class="mb-4">Email Verified! ✅</h1>
+  <p class="text-muted-foreground mb-6">
+    Your email has been successfully verified, {{user.firstName}}. You can now get reminders for your habits,
+    achievements, and more.
+  </p>
+
+  {{#if isAuthenticated}}
+  <a href="/dashboard" class="button">
+    Go to Dashboard
+    <i data-lucide="arrow-right" class="size-4"></i>
+  </a>
+  {{else}}
+  <a href="/auth/login" class="button">
+    Log in
+    <i data-lucide="arrow-right" class="size-4"></i>
+  </a>
+  {{/if}}
+</div>

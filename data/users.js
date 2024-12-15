@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 import {
 	userIdSchema,
@@ -8,8 +10,22 @@ import {
 	userSchema,
 	loginSchema,
 	userSettingsSchema,
+	verificationTokenSchema,
 } from "../schemas/users.js";
 import { users, habits, completions } from "../config/collections.js";
+
+const transporter = nodemailer.createTransport({
+	host: "smtp.sendgrid.net",
+	port: 587,
+	auth: {
+		user: "apikey",
+		pass: process.env.EMAIL_API_KEY,
+	},
+});
+
+const generateVerificationToken = () => {
+	return crypto.randomBytes(32).toString("hex");
+};
 
 export const createUser = async (data) => {
 	const validatedData = userSchema.parse(data);
@@ -41,6 +57,7 @@ export const createUser = async (data) => {
 		throw new Error("Something went wrong!", { cause: 500 });
 
 	const cleanedUser = {
+		_id: response.insertedId,
 		email: newUser.email,
 		firstName: newUser.firstName,
 		lastName: newUser.lastName,
@@ -97,6 +114,82 @@ export const updateUser = async (userId, data) => {
 
 	delete updatedUser.password;
 	return { updated: true, user: updatedUser };
+};
+
+export const sendVerificationEmail = async (user) => {
+	const verificationToken = generateVerificationToken();
+	const verificationExpires = dayjs().add(24, "hour").toDate();
+
+	const usersCollection = await users();
+	await usersCollection.updateOne(
+		{ _id: user._id },
+		{ $set: { verificationToken, verificationExpires } }
+	);
+
+	const verificationLink = `${process.env.APP_URL}/auth/verify-email/${verificationToken}`;
+	const mailOptions = {
+		from: process.env.EMAIL_USER,
+		to: user.email,
+		subject: "Verify your email address | Streakus Maximus",
+		html: `
+			<h1>Welcome to Streakus Maximus!</h1>
+			<p>Hi ${user.firstName},</p>
+			<p>Thank you for signing up with Streakus Maximus! To get started, please verify your email address by clicking the link below:</p>
+			
+			<a href="${verificationLink}">Verify Email</a>
+			<p>This link will expire in 24 hours.</p>
+
+			<p>If you did not sign up for an account, please ignore this email.</p>
+		`,
+	};
+
+	try {
+		await transporter.sendMail(mailOptions);
+		return true;
+	} catch (error) {
+		console.error("Error sending email: ", error);
+		throw new Error("Failed to send verification email!", { cause: 500 });
+	}
+};
+
+export const resendVerificationEmail = async (userId) => {
+	const validatedId = userIdSchema.parse({ _id: userId });
+	const usersCollection = await users();
+
+	const user = await usersCollection.findOne({
+		_id: ObjectId.createFromHexString(validatedId._id),
+	});
+	if (!user) throw new Error("This user doesn't exist!", { cause: 404 });
+
+	if (user.isVerified) {
+		throw new Error("Email already verified!", { cause: 400 });
+	}
+
+	await sendVerificationEmail(user);
+};
+
+export const verifyEmail = async (token) => {
+	const validatedToken = verificationTokenSchema.parse({ token });
+
+	const usersCollection = await users();
+	const user = await usersCollection.findOne({
+		verificationToken: validatedToken.token,
+		verificationExpires: { $gt: new Date() },
+	});
+
+	if (!user)
+		throw new Error("Invalid or expired verification token!", { cause: 400 });
+
+	await usersCollection.updateOne(
+		{ _id: user._id },
+		{
+			$set: { isVerified: true },
+			$unset: { verificationToken: "", verificationExpires: "" },
+		}
+	);
+
+	delete user.password;
+	return user;
 };
 
 export const getUserProfile = async (userId) => {

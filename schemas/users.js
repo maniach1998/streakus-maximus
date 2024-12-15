@@ -28,6 +28,9 @@ export const userSchema = z
 			.refine((password) => password.length > 8, {
 				message: "Password should be more than 8 characters long!",
 			}),
+		isVerified: z.boolean().default(false),
+		verificationToken: z.string().optional(),
+		verificationExpires: z.date().optional(),
 		emailPreferences: z
 			.object({
 				achievements: z.boolean().default(false),
@@ -71,4 +74,13 @@ export const userSettingsSchema = z.object({
 			streakAlerts: z.boolean().default(false),
 		})
 		.default({}),
+});
+
+export const verificationTokenSchema = z.object({
+	token: z
+		.string()
+		.transform((token) => token.trim())
+		.refine((token) => token.length > 0, {
+			message: "Verification token is required!",
+		}),
 });

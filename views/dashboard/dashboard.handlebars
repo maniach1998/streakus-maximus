@@ -1,6 +1,15 @@
 <h1>Dashboard</h1>
 <h2>Welcome, {{user.firstName}}😎</h2>
 
+{{#unless user.isVerified}}
+<div class="my-4 p-4 bg-secondary/10 border border-secondary/20 rounded-md">
+  <p class="text-secondary-foreground text-sm font-medium">
+    Please verify your email address to enable reminders and other features.
+    Check your inbox for the verification link.
+  </p>
+</div>
+{{/unless}}
+
 <div class="mt-8">
   <h3 class="text-primary mb-2">Weekly Overview</h3>
   <p class="text-muted-foreground mb-4">

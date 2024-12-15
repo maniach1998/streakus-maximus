@@ -1,8 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
 
-import { loginSchema, userSchema } from "../schemas/users.js";
-import { createUser, loginUser } from "../data/users.js";
+import {
+	loginSchema,
+	userSchema,
+	verificationTokenSchema,
+} from "../schemas/users.js";
+import {
+	createUser,
+	loginUser,
+	sendVerificationEmail,
+	verifyEmail,
+} from "../data/users.js";
 
 const router = Router();
 
@@ -23,6 +32,9 @@ router
 			if (registered) {
 				req.session.isNewUser = registered;
 				req.session.newUser = user;
+
+				// send verification email
+				await sendVerificationEmail(user);
 
 				return res.redirect("/auth/login");
 			} else {
@@ -103,6 +115,46 @@ router
 			}
 		}
 	});
+
+router.route("/verify-email/:token").get(async (req, res) => {
+	try {
+		const validatedToken = verificationTokenSchema.parse({
+			token: req.params.token,
+		});
+		const user = await verifyEmail(validatedToken.token);
+
+		// update session if already logged in
+		if (
+			req.session.isAuthenticated &&
+			req.session.user._id === user._id.toString()
+		) {
+			req.session.user.isVerified = true;
+		}
+
+		return res.render("auth/verify-success", {
+			title: "Email verified",
+			user,
+		});
+	} catch (err) {
+		if (err instanceof z.ZodError) {
+			const errors = {};
+
+			err.errors.forEach((error) => {
+				errors[error.path[0]] = error.message;
+			});
+
+			return res.status(400).render("auth/verify-error", {
+				title: "Verification failed",
+				error: errors,
+			});
+		} else {
+			return res.status(err.cause || 500).render("auth/verify-error", {
+				title: "Verification failed",
+				error: { general: err.message || "Internal server error" },
+			});
+		}
+	}
+});
 
 router.route("/logout").get(async (req, res) => {
 	req.session.destroy((err) => {

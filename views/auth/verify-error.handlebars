@@ -1,0 +1,25 @@
+<div class="text-center">
+  <h1 class="text-2xl font-bold mb-4">Verification Failed ❌</h1>
+  <p class="text-destructive mb-6">
+    {{#if error.general}}
+    {{error.general}}
+    {{else}}
+    The verification link might have expired or is invalid.
+    {{/if}}
+  </p>
+
+  {{#if error.token}}
+  <p class="text-destructive mb-4">
+    {{error.token}}
+  </p>
+  {{/if}}
+
+  <p class="text-muted-foreground mb-4">
+    Please try registering again or contact support.
+  </p>
+
+  <a href="/auth/sign-up" class="button">
+    Register Again
+    <i data-lucide="arrow-right" class="size-4"></i>
+  </a>
+</div>
