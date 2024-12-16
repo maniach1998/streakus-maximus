@@ -97,8 +97,35 @@ export const editHabitSchema = z
 				message: "Status must be either 'active' or 'inactive'",
 			}),
 		}),
+		reminderTime: z
+			.string()
+			.transform((time) => time.trim())
+			.optional(),
 	})
-	.required("All fields are required!");
+	.required("All fields are required!")
+	.transform((data) => {
+		if (data.reminderTime) {
+			const parsedTime = dayjs(data.reminderTime, ["HH:mm", "hh:mm A"], true);
+
+			if (!parsedTime.isValid()) {
+				throw new Error("Invalid reminder time format!");
+			}
+
+			const reminder = reminderSchema.parse({
+				time: parsedTime.format("hh:mm A"),
+				status: "active",
+			});
+
+			return {
+				...data,
+				reminder,
+				reminderTime: undefined,
+			};
+		}
+
+		const { reminderTime, ...rest } = data;
+		return rest;
+	});
 
 export const updateHabitSchema = z
 	.object({

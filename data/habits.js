@@ -41,30 +41,23 @@ export const createHabit = async (userId, data) => {
 	};
 };
 
-export const updateHabitReminder = async (habitId, userId, data) => {
+export const updateHabitReminder = async (habitId, userId, reminderData) => {
 	const validatedId = habitIdSchema.parse({ _id: habitId });
+	const validatedReminder = reminderSchema.parse(reminderData);
+
 	const habitsCollection = await habits();
-
-	let updateQuery;
-
-	if (!data || !data.time) {
-		updateQuery = { $unset: { reminder: "" } };
-	} else {
-		const validatedData = reminderSchema.parse(data);
-		updateQuery = {
-			$set: {
-				reminder: validatedData,
-				updatedAt: new Date().toISOString(),
-			},
-		};
-	}
 
 	const response = await habitsCollection.findOneAndUpdate(
 		{
 			_id: ObjectId.createFromHexString(validatedId._id),
 			userId: ObjectId.createFromHexString(userId),
 		},
-		updateQuery,
+		{
+			$set: {
+				reminder: validatedReminder,
+				updatedAt: new Date().toISOString(),
+			},
+		},
 		{ returnDocument: "after" }
 	);
 
@@ -144,17 +137,16 @@ export const editHabit = async (habitId, userId, data) => {
 	const validatedData = editHabitSchema.parse(data);
 	const habitsCollection = await habits();
 
-	const updateData = {
-		...validatedData,
-		updatedAt: new Date().toISOString(),
-	};
+	if (validatedData.status === "inactive" && validatedData.reminder) {
+		validatedData.reminder.status = "inactive";
+	}
 
 	const response = await habitsCollection.findOneAndUpdate(
 		{
 			_id: ObjectId.createFromHexString(validatedId._id),
 			userId: ObjectId.createFromHexString(userId),
 		},
-		{ $set: updateData },
+		{ $set: { ...validatedData, updatedAt: new Date().toISOString() } },
 		{ returnDocument: "after" }
 	);
 	if (!response) throw new Error("Habit not found!", { cause: 404 });

@@ -62,6 +62,27 @@
     {{/if}}
   </div>
 
+  <div class="space-y-2">
+    <label for="reminderTime" class="text-sm font-medium">
+      Reminder (Optional)
+    </label>
+    <input type="time" name="reminderTime" id="reminderTime"
+      value="{{#if habit.reminder}}{{formatTime habit.reminder.time}}{{/if}}"
+      class="w-full {{#if error.reminderTime}}border-destructive{{/if}}" {{#unless isVerified}}disabled{{/unless}}>
+    {{#if error.reminderTime}}
+    <p class="text-destructive text-sm">{{error.reminderTime}}</p>
+    {{/if}}
+    <p class="text-sm text-muted-foreground">
+      Set a reminder to help you stay on track with your {{habit.frequency}} habit
+    </p>
+    {{#unless isVerified}}
+    <p class="text-sm text-muted-foreground">
+      Note: You need to verify your email to set reminders. If you haven't verified your email yet, please do so
+      <a href="/settings" class="text-primary hover:text-primary/80">here</a>.
+    </p>
+    {{/unless}}
+  </div>
+
   {{#if error.general}}
   <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
     <p class="text-destructive font-medium text-sm">{{error.general}}</p>

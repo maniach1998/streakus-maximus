@@ -18,4 +18,7 @@ export const handlebarsHelpers = {
 	fromNow: (date) => {
 		return dayjs(date).fromNow();
 	},
+	formatTime: (time) => {
+		return dayjs(time, "hh:mm A").format("HH:mm");
+	},
 };

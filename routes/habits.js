@@ -57,6 +57,7 @@ router
 			title: "Create a new habit",
 			formData: {},
 			errors: [],
+			isVerified: req.session.user.isVerified,
 		});
 	})
 	.post(async (req, res) => {
@@ -91,6 +92,7 @@ router
 					title: "Create New Habit",
 					formData: req.body,
 					errors: err.errors,
+					isVerified: req.session.user.isVerified,
 				});
 			} else {
 				req.session.errors = [
@@ -107,12 +109,12 @@ router
 							message: err.message || "Failed to create habit",
 						},
 					],
+					isVerified: req.session.user.isVerified,
 				});
 			}
 		}
 	});
 
-// TODO: add templates for updating habit
 router.route("/:id").get(async (req, res) => {
 	try {
 		const validatedId = habitIdSchema.parse({ _id: req.params.id });
@@ -151,6 +153,7 @@ router
 			return res.render("habits/edit", {
 				title: `Edit ${habit.name}`,
 				habit,
+				isVerified: req.session.user.isVerified,
 			});
 		} catch (err) {
 			if (err instanceof z.ZodError) {
@@ -178,36 +181,48 @@ router
 	.put(async (req, res) => {
 		try {
 			const validatedId = habitIdSchema.parse({ _id: req.params.id });
-			const validatedData = editHabitSchema.parse(req.body);
+			const habitData = {
+				name: req.body.name,
+				description: req.body.description,
+				frequency: req.body.frequency,
+				status: req.body.status,
+				reminderTime: req.body.reminderTime || req.body["reminder.time"],
+			};
+
 			const updatedHabit = await editHabit(
 				validatedId._id,
 				req.session.user._id,
-				validatedData
+				habitData
 			);
 
-			req.session.success = true;
+			// handle any reminder updates
+			if (updatedHabit.reminder && updatedHabit.reminder.status === "active") {
+				await reminderService.scheduleReminder(updatedHabit, req.session.user);
+			} else {
+				reminderService.cancelReminder(updatedHabit._id.toString());
+			}
 
+			req.session.success = true;
 			return res.redirect(`/habits/${updatedHabit._id}`);
 		} catch (err) {
 			const _id = req.params.id;
 
 			if (err instanceof z.ZodError) {
-				const errors = {};
-
-				err.errors.forEach((error) => {
-					errors[error.path[0]] = error.message;
-				});
-
 				return res.status(400).render("habits/edit", {
 					title: "Edit Habit",
 					habit: { ...req.body, _id },
-					error: errors,
+					error: err.errors.reduce((acc, curr) => {
+						acc[curr.path[0]] = curr.message;
+						return acc;
+					}, {}),
+					isVerified: req.session.user.isVerified,
 				});
 			} else {
 				return res.status(err.cause || 500).render("habits/edit", {
 					title: "Edit Habit",
 					habit: { ...req.body, _id },
 					error: { general: err.message || "Internal server error" },
+					isVerified: req.session.user.isVerified,
 				});
 			}
 		}

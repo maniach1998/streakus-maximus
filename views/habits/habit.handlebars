@@ -73,6 +73,31 @@
   </div>
 </div>
 
+<div class="card mb-4">
+  <h3 class="text-sm font-medium text-muted-foreground">Reminder</h3>
+  {{#if habit.reminder}}
+  <div class="mt-1 flex items-center justify-between">
+    <p class="font-medium">
+      {{habit.reminder.time}}
+      {{#if (eq habit.reminder.status "active")}}
+      <span class="inline-block w-2 h-2 bg-green-500 rounded-full ml-2"></span>
+      {{else}}
+      <span class="inline-block w-2 h-2 bg-gray-500 rounded-full ml-2"></span>
+      {{/if}}
+    </p>
+    <button onclick="toggleReminder('{{habit._id}}')" class="button button-secondary" data-reminder-toggle>
+      {{#if (eq habit.reminder.status "active")}}
+      Remove Reminder
+      {{else}}
+      Reactivate Reminder
+      {{/if}}
+    </button>
+  </div>
+  {{else}}
+  <p class="mt-1 font-medium text-muted-foreground">No reminder set</p>
+  {{/if}}
+</div>
+
 <div class="bg-card border border-secondary rounded-lg p-6">
   {{#if habit.canComplete}}
   <div class="mb-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
@@ -101,15 +126,17 @@
     {{#if habit.lastCompleted}}
     <div>
       <h3 class="text-sm font-medium text-muted-foreground">Last Completed</h3>
-      <p class="mt-1 font-medium">{{fromNow habit.lastCompleted}}</p>
+      <p class="mt-1 font-medium">{{formatDate habit.lastCompleted}} ({{fromNow habit.lastCompleted}})</p>
     </div>
     {{/if}}
 
     {{#if habit.nextAvailable}}
     <div>
       <h3 class="text-sm font-medium text-muted-foreground">Next Available</h3>
-      <p class="mt-1 font-medium">{{fromNow habit.nextAvailable}}</p>
+      <p class="mt-1 font-medium">{{formatDate habit.nextAvailable}} ({{fromNow habit.nextAvailable}})</p>
     </div>
     {{/if}}
   </div>
 </div>
+
+<script src="/public/js/reminder.js"></script>

@@ -54,7 +54,8 @@
     <label for="reminderTime" class="text-sm font-medium">
       Daily Reminder (Optional)
     </label>
-    <input type="time" name="reminderTime" id="reminderTime" value="{{formData.reminderTime}}" class="w-full">
+    <input type="time" name="reminderTime" id="reminderTime" value="{{formData.reminderTime}}" class="w-full" {{#unless
+      isVerified}}disabled{{/unless}}>
     {{#each errors}}
     {{#if (eq this.path.[0] "reminderTime")}}
     <p class="text-destructive text-sm">{{this.message}}</p>
@@ -63,6 +64,12 @@
     <p class="text-sm text-muted-foreground">
       Set a daily reminder to help you stay on track
     </p>
+    {{#unless isVerified}}
+    <p class="text-sm text-muted-foreground">
+      Note: You need to verify your email to set a daily reminder. If you haven't verified your email yet, please do so
+      <a href="/settings" class="text-primary hover:text-primary/80">here</a>.
+    </p>
+    {{/unless}}
   </div>
 
   {{#if errors}}

@@ -5,14 +5,17 @@ import { createObjectCsvStringifier } from "csv-writer";
 import { requireAuth } from "../../middlewares/auth.js";
 import {
 	deactivateHabit,
+	getHabitById,
 	getHabitExportData,
 	reactivateHabit,
+	updateHabitReminder,
 } from "../../data/habits.js";
 import {
 	markHabitComplete,
 	getHabitCompletions,
 } from "../../data/completions.js";
 import { habitIdSchema } from "../../schemas/habits.js";
+import reminderService from "../../services/reminderService.js";
 
 const router = Router();
 
@@ -160,6 +163,58 @@ router.route("/:id/export").get(async (req, res) => {
 				message: err.message || "Internal server error",
 			});
 		}
+	}
+});
+
+router.route("/:id/reminder").put(async (req, res) => {
+	try {
+		const validatedId = habitIdSchema.parse({ _id: req.params.id });
+
+		const habit = await getHabitById(validatedId._id, req.session.user._id);
+		if (!habit) {
+			throw new Error("Habit not found!", { cause: 404 });
+		}
+
+		if (!habit.reminder) {
+			throw new Error("No reminder exists for this habit!", { cause: 400 });
+		}
+
+		const status = z.enum(["active", "inactive"]).parse(req.body.status);
+		const updatedHabit = await updateHabitReminder(
+			validatedId._id,
+			req.session.user._id,
+			{
+				...habit.reminder,
+				status,
+			}
+		);
+
+		if (status === "active") {
+			await reminderService.scheduleReminder(updatedHabit, req.session.user);
+		} else {
+			reminderService.cancelReminder(updatedHabit._id.toString());
+		}
+
+		res.json({
+			success: true,
+			message: `Reminder ${
+				status === "active" ? "activated" : "deactivated"
+			} successfully`,
+			habit: updatedHabit,
+		});
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid input data",
+				errors: error.errors,
+			});
+		}
+
+		res.status(error.cause || 500).json({
+			success: false,
+			message: error.message || "Internal server error",
+		});
 	}
 });
 
