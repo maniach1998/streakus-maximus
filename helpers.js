@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js";
 
-import { completions } from "./config/collections.js";
+import { completions, habits } from "./config/collections.js";
 
 // use plugins
 dayjs.extend(isSameOrBefore);
@@ -213,6 +213,9 @@ export const calculateAllStreaks = (completions, frequency) => {
 		startDate: currentStreak.startDate.toISOString(),
 		endDate: currentStreak.endDate.toISOString(),
 		isActive: false,
+		completions: currentStreak.completions.sort(
+			(a, b) => dayjs(b.date) - dayjs(a.date)
+		),
 	});
 
 	// check if lastest streak is active
@@ -239,6 +242,69 @@ export const calculateAllStreaks = (completions, frequency) => {
 				streak.duration === Math.max(...streaks.map((s) => s.duration))
 		),
 	};
+};
+
+export const validateAndUpdateStreak = async (habit, userId) => {
+	const completionsCollection = await completions();
+
+	const lastCompletion = await completionsCollection.findOne(
+		{
+			habitId: habit._id,
+			userId: ObjectId.createFromHexString(userId),
+		},
+		{ sort: { date: -1 } }
+	);
+
+	if (!lastCompletion) {
+		// if not completions exist, set streak to 0
+		if (habit.streak !== 0) {
+			const habitsCollection = await habits();
+			await habitsCollection.updateOne(
+				{ _id: habit._id },
+				{ $set: { streak: 0 } }
+			);
+			return 0;
+		}
+		return habit.streak;
+	}
+
+	const lastCompletionDate = dayjs(lastCompletion.date).startOf("day");
+	const currentDate = dayjs().startOf("day");
+	let streakBroken = false;
+
+	switch (habit.frequency) {
+		case "daily":
+			const daysSinceCompletion = currentDate.diff(lastCompletionDate, "day");
+			streakBroken = daysSinceCompletion > 1;
+			break;
+		case "weekly":
+			const lastCompletionWeek = lastCompletionDate.startOf("week");
+			const currentWeek = currentDate.startOf("week");
+			const weeksSinceCompletion = currentWeek.diff(lastCompletionWeek, "week");
+			streakBroken = weeksSinceCompletion > 1;
+			break;
+		case "monthly":
+			const lastCompletionMonth = lastCompletionDate.startOf("month");
+			const currentMonth = currentDate.startOf("month");
+			const monthsSinceCompletion = currentMonth.diff(
+				lastCompletionMonth,
+				"month"
+			);
+			streakBroken = monthsSinceCompletion > 1;
+			break;
+	}
+
+	if (streakBroken && habit.streak !== 0) {
+		// reset the streak
+		const habitsCollection = await habits();
+		await habitsCollection.updateOne(
+			{ _id: habit._id },
+			{ $set: { streak: 0 } }
+		);
+		return 0;
+	}
+
+	return habit.streak;
 };
 
 export const getWeeklyRates = (completions, startDate, endDate) => {

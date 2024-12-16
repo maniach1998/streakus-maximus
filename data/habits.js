@@ -7,11 +7,14 @@ import {
 	updateHabitSchema,
 	habitStatusSchema,
 	editHabitSchema,
+	reminderSchema,
 } from "../schemas/habits.js";
+
 import {
 	calculateAllStreaks,
 	calculateNextAvailable,
 	canMarkComplete,
+	validateAndUpdateStreak,
 } from "../helpers.js";
 
 export const createHabit = async (userId, data) => {
@@ -38,6 +41,37 @@ export const createHabit = async (userId, data) => {
 	};
 };
 
+export const updateHabitReminder = async (habitId, userId, data) => {
+	const validatedId = habitIdSchema.parse({ _id: habitId });
+	const habitsCollection = await habits();
+
+	let updateQuery;
+
+	if (!data || !data.time) {
+		updateQuery = { $unset: { reminder: "" } };
+	} else {
+		const validatedData = reminderSchema.parse(data);
+		updateQuery = {
+			$set: {
+				reminder: validatedData,
+				updatedAt: new Date().toISOString(),
+			},
+		};
+	}
+
+	const response = await habitsCollection.findOneAndUpdate(
+		{
+			_id: ObjectId.createFromHexString(validatedId._id),
+			userId: ObjectId.createFromHexString(userId),
+		},
+		updateQuery,
+		{ returnDocument: "after" }
+	);
+
+	if (!response) throw new Error("Habit not found!", { cause: 404 });
+	return response;
+};
+
 export const getUserHabits = async (userId, status = "active") => {
 	const habitsCollection = await habits();
 
@@ -57,6 +91,12 @@ export const getUserHabits = async (userId, status = "active") => {
 		.sort({ updatedAt: -1 })
 		.toArray();
 
+	await Promise.all(
+		userHabits.map(async (habit) => {
+			habit.streak = await validateAndUpdateStreak(habit, userId);
+		})
+	);
+
 	return userHabits;
 };
 
@@ -70,6 +110,8 @@ export const getHabitById = async (habitId, userId) => {
 	});
 
 	if (!habit) throw new Error("Habit not found!", { cause: 404 });
+
+	habit.streak = await validateAndUpdateStreak(habit, userId);
 
 	return habit;
 };
