@@ -192,6 +192,9 @@ export const calculateAllStreaks = (completions, frequency) => {
 				startDate: currentStreak.startDate.toISOString(),
 				endDate: currentStreak.endDate.toISOString(),
 				isActive: false,
+				completions: currentStreak.completions.sort(
+					(a, b) => dayjs(b.date) - dayjs(a.date)
+				),
 			});
 
 			// reset to start a new streak
@@ -230,13 +233,10 @@ export const calculateAllStreaks = (completions, frequency) => {
 	}
 
 	return {
-		allStreaks: streaks.sort(
-			(a, b) => new Date(b.endDate) - new Date(a.endDate)
-		),
+		allStreaks: streaks.sort((a, b) => dayjs(b.endDate) - dayjs(a.endDate)),
 		longestStreak: streaks.find(
 			(streak) =>
-				streak.duration ===
-				Math.max(...streaks.map((streak) => streak.duration))
+				streak.duration === Math.max(...streaks.map((s) => s.duration))
 		),
 	};
 };

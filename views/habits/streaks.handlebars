@@ -18,10 +18,11 @@
             <p class="text-sm text-muted-foreground">{{formatDate this.startDate}} - {{#if
               this.isActive}}Present{{else}}{{formatDate
               this.endDate}}{{/if}}</p>
-            <p class="text-2xl font-bold">{{this.duration}}🔥</p>
-            {{!-- {{#if (eq this.duration longestStreak.duration)}} --}}
-            <p class="text-sm text-muted-foreground">{{longestStreak.duration}}</p>
-            {{!-- {{/if}} --}}
+            <p class="text-2xl font-bold">{{this.duration}}🔥
+              {{#if (eq this.duration ../longestStreak.duration)}}
+              <span title="Longest streak">🏆</span>
+              {{/if}}
+            </p>
           </div>
           {{#if this.isActive}}
           <p class="text-sm font-bold text-primary mb-1 animate-pulse">Current streak</p>
@@ -29,8 +30,10 @@
           <p class="text-sm font-bold text-muted-foreground mb-1">Ended {{fromNow this.endDate}}</p>
           {{/if}}
         </div>
-        <div
-          class="rounded-lg overflow-hidden {{#if this.isActive}}bg-primary/10 border border-primary/10{{else}}border border-secondary bg-muted{{/if}}">
+        <div class="rounded-lg overflow-hidden 
+          {{#if this.isActive}}bg-primary/10 border border-primary/10
+          {{else if (eq this.duration ../longestStreak.duration)}}bg-primary/5 border border-primary/10
+          {{else}}border border-secondary bg-muted{{/if}}">
           <div class="p-4">
             <div class="space-y-4">
               {{#each this.completions}}
