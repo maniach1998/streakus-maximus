@@ -5,6 +5,7 @@ import session from "express-session";
 import configRoutes from "./routes/index.js";
 import { setUserDefaults } from "./middlewares/auth.js";
 import { handlebarsHelpers } from "./handlebars.js";
+import reminderService from "./services/reminderService.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,4 +57,11 @@ configRoutes(app);
 
 app.listen(PORT, () => {
 	console.log(`Woohoo! Server running at http://localhost:${PORT} 🙌`);
+});
+
+await reminderService.start();
+
+process.on("SIGTERM", async () => {
+	reminderService.stop();
+	process.exit(0);
 });

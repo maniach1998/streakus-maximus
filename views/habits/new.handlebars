@@ -50,6 +50,21 @@
     {{/each}}
   </div>
 
+  <div class="space-y-2">
+    <label for="reminderTime" class="text-sm font-medium">
+      Daily Reminder (Optional)
+    </label>
+    <input type="time" name="reminderTime" id="reminderTime" value="{{formData.reminderTime}}" class="w-full">
+    {{#each errors}}
+    {{#if (eq this.path.[0] "reminderTime")}}
+    <p class="text-destructive text-sm">{{this.message}}</p>
+    {{/if}}
+    {{/each}}
+    <p class="text-sm text-muted-foreground">
+      Set a daily reminder to help you stay on track
+    </p>
+  </div>
+
   {{#if errors}}
   <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
     <p class="text-destructive text-sm font-medium">Please fix the errors above</p>

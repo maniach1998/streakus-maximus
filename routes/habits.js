@@ -15,6 +15,7 @@ import { getHabitProgress, getHabitStats } from "../data/stats.js";
 
 import { requireAuth } from "../middlewares/auth.js";
 import { canMarkComplete } from "../helpers.js";
+import reminderService from "../services/reminderService.js";
 
 const router = Router();
 
@@ -60,7 +61,19 @@ router
 	})
 	.post(async (req, res) => {
 		try {
-			const newHabit = await createHabit(req.session.user._id, req.body);
+			const habitData = {
+				name: req.body.name,
+				description: req.body.description,
+				frequency: req.body.frequency,
+				reminderTime: req.body.reminderTime || req.body["reminder.time"],
+			};
+
+			const newHabit = await createHabit(req.session.user._id, habitData);
+
+			if (newHabit.reminder) {
+				const user = req.session.user;
+				await reminderService.scheduleReminder(newHabit, user);
+			}
 
 			// clear any stored form data
 			delete req.session.formData;

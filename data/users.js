@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 
 import {
 	userIdSchema,
@@ -13,17 +12,9 @@ import {
 	verificationTokenSchema,
 } from "../schemas/users.js";
 import { users, habits, completions } from "../config/collections.js";
+import transporter from "../config/nodemailer.js";
 
 import { calculateAllStreaks } from "../helpers.js";
-
-const transporter = nodemailer.createTransport({
-	host: "smtp.sendgrid.net",
-	port: 587,
-	auth: {
-		user: "apikey",
-		pass: process.env.EMAIL_API_KEY,
-	},
-});
 
 const generateVerificationToken = () => {
 	return crypto.randomBytes(32).toString("hex");
