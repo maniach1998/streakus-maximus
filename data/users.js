@@ -14,6 +14,8 @@ import {
 } from "../schemas/users.js";
 import { users, habits, completions } from "../config/collections.js";
 
+import { calculateAllStreaks } from "../helpers.js";
+
 const transporter = nodemailer.createTransport({
 	host: "smtp.sendgrid.net",
 	port: 587,
@@ -199,7 +201,6 @@ export const getUserProfile = async (userId) => {
 
 	// validate userId and make sure user exists
 	const validatedId = userIdSchema.parse({ _id: userId });
-
 	const user = await usersCollection.findOne(
 		{
 			_id: ObjectId.createFromHexString(validatedId._id),
@@ -221,11 +222,46 @@ export const getUserProfile = async (userId) => {
 			.toArray(),
 	]);
 
+	// gather habit IDs
+	const habitsMap = userHabits.reduce((map, habit) => {
+		map[habit._id.toString()] = {
+			_id: habit._id,
+			name: habit.name,
+		};
+		return map;
+	}, {});
+
 	// calculate stats
-	const longestStreak = Math.max(
-		...userHabits.map((habit) => habit.streak || 0),
+	const completionsByHabit = userHabits.map((habit) => {
+		const habitCompletions = allCompletions.filter(
+			(comp) => comp.habitId.toString() === habit._id.toString()
+		);
+
+		return {
+			habit,
+			streaks: calculateAllStreaks(habitCompletions, habit.frequency),
+		};
+	});
+
+	const allTimeStreak = Math.max(
+		...completionsByHabit.map(
+			({ streaks }) => streaks.longestStreak.duration || 0
+		),
 		0
 	);
+
+	const longestActiveHabits = completionsByHabit
+		.filter(({ habit }) => habit.status === "active")
+		.filter(({ streaks }) =>
+			streaks.allStreaks.find((streak) => streak.isActive)
+		)
+		.sort((a, b) => b.habit.streak - a.habit.streak);
+
+	const longestActiveStreak = Math.max(
+		longestActiveHabits.length > 0 ? longestActiveHabits[0].habit.streak : 0,
+		0
+	);
+
 	const habitTypes = {
 		daily: userHabits.filter((habit) => habit.frequency === "daily").length,
 		weekly: userHabits.filter((habit) => habit.frequency === "weekly").length,
@@ -234,18 +270,21 @@ export const getUserProfile = async (userId) => {
 	const recentActivity = allCompletions
 		.sort((a, b) => dayjs(b.date) - dayjs(a.date))
 		.slice(0, 5)
-		.map((comp) => ({ habitId: comp.habitId, date: comp.date }));
+		.map((comp) => ({
+			habitId: comp.habitId,
+			name: habitsMap[comp.habitId.toString()].name,
+			date: comp.date,
+			time: comp.time,
+		}))
+		.filter((comp) => comp.name);
 
 	const stats = {
 		totalHabits: userHabits.length,
 		activeHabits: userHabits.filter((habit) => habit.status === "active")
 			.length,
 		totalCompletions: allCompletions.length,
-		longestStreak,
-		currentTotalStreak: userHabits.reduce(
-			(sum, habit) => sum + (habit.streak || 0),
-			0
-		),
+		allTimeLongestStreak: allTimeStreak,
+		longestActiveStreak,
 		memberSince: dayjs(user.createdAt).format("MMMM D, YYYY"),
 		daysAsMember: dayjs().diff(dayjs(user.createdAt), "day"),
 		habitTypes,

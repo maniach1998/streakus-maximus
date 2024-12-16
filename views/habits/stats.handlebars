@@ -63,11 +63,13 @@
       </div>
       <div class="pt-4 border-t border-border">
         <p class="text-sm text-muted-foreground">Completion rate</p>
+        {{#unless (eq stats.totalCompletions 0)}}
         <div class="my-4 lg:my-8 relative w-full max-w-3xl lg:max-w-md mx-auto">
           <canvas id="completionPieChart" data-completions="{{stats.totalCompletions}}"
             data-expected="{{stats.expectedCompletions}}">
           </canvas>
         </div>
+        {{/unless}}
 
         <div class="mt-2 relative pt-1">
           <div class="overflow-hidden h-2 text-xs flex rounded bg-muted">
