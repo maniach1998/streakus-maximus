@@ -66,6 +66,16 @@ export const updateHabitReminder = async (habitId, userId, reminderData) => {
 };
 
 export const getUserHabits = async (userId, status = "active") => {
+	const validStatus = ["active", "inactive", "all"];
+	if (!validStatus.includes(status)) {
+		throw new Error(
+			"Invalid status filter! Valid statuses are: " + validStatus.join(", "),
+			{
+				cause: 400,
+			}
+		);
+	}
+
 	const habitsCollection = await habits();
 
 	const query = {

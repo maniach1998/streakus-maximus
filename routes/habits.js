@@ -23,7 +23,6 @@ router.use(requireAuth);
 
 router.route("/").get(async (req, res) => {
 	try {
-		// TODO: validate query status, and redirect to proper query status page
 		const [activeHabits, inactiveHabits] = await Promise.all([
 			getUserHabits(req.session.user._id, "active"),
 			getUserHabits(req.session.user._id, "inactive"),
