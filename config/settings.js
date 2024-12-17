@@ -1,7 +1,5 @@
-const SERVER_URL = process.env.MONGODB_SERVER_URL;
-const DATABASE = process.env.MONGODB_DATABASE;
+const URI = process.env.MONGODB_URI;
 
 export const mongoConfig = {
-	serverUrl: SERVER_URL,
-	database: DATABASE,
+	URI,
 };

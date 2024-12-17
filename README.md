@@ -31,8 +31,7 @@ EMAIL_USER="manasspams98@gmail.com"
 EMAIL_API_KEY="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"
 
 # Database
-MONGODB_SERVER_URL="mongodb://127.0.0.1:27017/"
-MONGODB_DATABASE="Streakus_Maximus"
+MONGODB_URI="mongodb+srv://manasacharekar98:wJUugtCCHfKVjosg@streakusmaximus.nz1jq.mongodb.net/?retryWrites=true&w=majority&appName=StreakusMaximus"
 ```
 
 ### Installation Steps
@@ -149,3 +148,13 @@ All API routes return JSON responses in the following format:
 - Streak calculation system
 - Progress tracking
 - Analytics generation
+
+## A few example accounts
+
+```
+email: manas.acharekar98@gmail.com
+password: Manas@1998
+
+email: acharekar.manas11@gmail.com
+password: Manas@1998
+```
