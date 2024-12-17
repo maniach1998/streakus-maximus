@@ -17,4 +17,3 @@ export const users = getCollectionFn("users");
 export const habits = getCollectionFn("habits");
 export const completions = getCollectionFn("completions");
 export const achievements = getCollectionFn("achievements");
-export const reminders = getCollectionFn("reminders");

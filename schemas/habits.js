@@ -2,6 +2,14 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
+import xss from "xss";
+
+const sanitize = (input) =>
+	xss(input, {
+		whiteList: {},
+		stripIgnoreTag: true,
+		stripIgnoreTagBody: ["script"],
+	});
 
 dayjs.extend(customParseFormat);
 
@@ -16,16 +24,20 @@ const baseHabitFields = {
 		.transform((name) => name.trim())
 		.refine((name) => name.length >= 3, {
 			message: "Habit name must be at least 3 characters long!",
-		}),
+		})
+		.transform(sanitize),
 	description: z
 		.string()
 		.transform((desc) => desc.trim())
 		.refine((desc) => desc.length >= 10, {
 			message: "Description must be at least 10 characters long",
-		}),
-	frequency: z.enum(["daily", "weekly", "monthly"], {
-		message: "Frequency must be either 'daily', 'weekly', or 'monthly'",
-	}),
+		})
+		.transform(sanitize),
+	frequency: z
+		.enum(["daily", "weekly", "monthly"], {
+			message: "Frequency must be either 'daily', 'weekly', or 'monthly'",
+		})
+		.transform(sanitize),
 };
 
 export const reminderSchema = z.object({
@@ -35,6 +47,7 @@ export const reminderSchema = z.object({
 		.refine((time) => time.length > 0, {
 			message: "Reminder time is required!",
 		})
+		.transform(sanitize)
 		.refine(
 			(time) =>
 				dayjs(time, "hh:mm A").isValid() || dayjs(time, "HH:mm").isValid(),
@@ -55,6 +68,7 @@ export const habitSchema = z
 		reminderTime: z
 			.string()
 			.transform((time) => time.trim())
+			.transform(sanitize)
 			.optional(),
 	})
 	.required("All fields are required!")
@@ -86,20 +100,24 @@ export const habitIdSchema = z.object({
 	_id: z
 		.string()
 		.transform((id) => id.trim())
-		.refine((id) => ObjectId.isValid(id), { message: "Not a valid ObjectId!" }),
+		.refine((id) => ObjectId.isValid(id), { message: "Not a valid ObjectId!" })
+		.transform(sanitize),
 });
 
 export const editHabitSchema = z
 	.object({
 		...baseHabitFields,
-		status: z.enum(["active", "inactive"], {
-			errorMap: () => ({
-				message: "Status must be either 'active' or 'inactive'",
-			}),
-		}),
+		status: z
+			.enum(["active", "inactive"], {
+				errorMap: () => ({
+					message: "Status must be either 'active' or 'inactive'",
+				}),
+			})
+			.transform(sanitize),
 		reminderTime: z
 			.string()
 			.transform((time) => time.trim())
+			.transform(sanitize)
 			.optional(),
 	})
 	.required("All fields are required!")
@@ -139,6 +157,7 @@ export const updateHabitSchema = z
 		reminderTime: z
 			.string()
 			.transform((time) => time.trim())
+			.transform(sanitize)
 			.optional(),
 	})
 	.transform((data) => {

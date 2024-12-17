@@ -31,6 +31,7 @@
 		"nodemailer": "^6.9.16",
 		"postcss": "^8.4.49",
 		"tailwindcss": "^3.4.15",
+		"xss": "^1.0.15",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
