@@ -18,16 +18,52 @@
 <body>
 	<header class="z-[999] fixed p-4 border-b border-muted bg-background/50 backdrop-blur-sm w-full">
 		<nav>
-			<ul class="flex items-center list-none gap-5">
-				{{#if isAuthenticated}}
-				<li><a href="/dashboard">Dashboard</a></li>
-				<li><a href="/profile">Profile</a></li>
-				<li><a href="/auth/logout" class="button button-destructive">Log out</a></li>
-				{{else}}
-				<li><a href="/">Home</a></li>
-				<li><a href="/auth/login" class="button button-secondary">Log in</a></li>
-				{{/if}}
-			</ul>
+			<div class="flex items-center justify-between">
+				<ul class="flex items-center list-none gap-5">
+					{{#if isAuthenticated}}
+					<li><a href="/dashboard">Dashboard</a></li>
+					<li><a href="/habits">Habits</a></li>
+					{{else}}
+					<li><a href="/">Home</a></li>
+					{{/if}}
+				</ul>
+
+				<ul class="flex items-center list-none gap-5">
+					{{#if isAuthenticated}}
+					<li><a href="/habits/new" class="button"><i data-lucide="plus" class="size-4"></i> New habit</a></li>
+					<li class="relative group">
+						<button type="button" class="button button-secondary" aria-expanded="false" aria-haspopup="true">
+							<i data-lucide="user-circle" class="size-5"></i>
+							<i data-lucide="chevron-down" class="size-4"></i>
+						</button>
+						<div
+							class="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-card border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+							<div class="py-1" role="menu">
+								<a href="/profile"
+									class="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+									role="menuitem">
+									Profile
+								</a>
+								<a href="/settings"
+									class="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+									role="menuitem">
+									Settings
+								</a>
+								<div class="border-t border-border my-1"></div>
+								<a href="/auth/logout"
+									class="block px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+									role="menuitem">
+									Log out
+								</a>
+							</div>
+						</div>
+					</li>
+					{{else}}
+					<li><a href="/auth/login" class="button button-secondary">Log in</a></li>
+					{{/if}}
+
+				</ul>
+			</div>
 		</nav>
 	</header>
 
