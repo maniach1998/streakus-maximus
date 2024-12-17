@@ -1,5 +1,96 @@
-<h1>Home page</h1>
+<div class="min-h-screen">
+	{{!-- Hero Section --}}
+	<section class="py-20 px-4">
+		<div class="container mx-auto text-center">
+			<h1 class="text-4xl md:text-6xl font-bold mb-6">Build Better Habits with <span class="text-primary">Streakus
+					Maximus</span></h1>
+			<p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+				Your personal habit tracking companion that helps you build lasting habits through the power of streaks and
+				consistent progress tracking.
+			</p>
+			<a href="/auth/register" class="button button-primary text-lg">
+				Start Your Journey
+			</a>
+		</div>
+	</section>
 
-<p class="text-lg">
-	Welcome to Streakus Maximus!
-</p>
+	{{!-- Features Grid --}}
+	<section class="py-16 px-4 bg-muted/30 rounded-lg">
+		<div class="container mx-auto">
+			<h2 class="text-3xl font-bold text-center mb-12">Everything You Need to Build Better Habits</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="flame" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Track Your Streaks</h3>
+					<p class="text-muted-foreground">Build momentum with daily, weekly, or monthly streaks. Watch your progress
+						grow and stay motivated.</p>
+				</div>
+
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="bell" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Smart Reminders</h3>
+					<p class="text-muted-foreground">Never miss a habit with customizable reminders. Get notified at the perfect
+						time for your routine.</p>
+				</div>
+
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="bar-chart" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Detailed Analytics</h3>
+					<p class="text-muted-foreground">Visualize your progress with comprehensive stats and insights. Understand
+						your habits better.</p>
+				</div>
+
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="trophy" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Achievements</h3>
+					<p class="text-muted-foreground">Earn badges and rewards as you build your habits. Stay motivated with
+						gamified progress tracking.</p>
+				</div>
+
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="calendar" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Flexible Scheduling</h3>
+					<p class="text-muted-foreground">Set habits on your terms - daily, weekly, or monthly. Adapt to your lifestyle
+						and goals.</p>
+				</div>
+
+				<div class="card">
+					<div class="mb-4">
+						<i data-lucide="layout-dashboard" class="size-8 text-primary"></i>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Clean Dashboard</h3>
+					<p class="text-muted-foreground">Everything you need at a glance. Track progress, view streaks, and manage
+						habits effortlessly.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{{!-- CTA Section --}}
+	<section class="py-20 px-4">
+		<div class="container mx-auto text-center">
+			<div class="max-w-3xl mx-auto">
+				<h2 class="text-3xl font-bold mb-6">Start Building Better Habits Today</h2>
+				<p class="text-lg text-muted-foreground mb-8">
+					Join thousands of others who are using Streakus Maximus to transform their lives through the power of
+					consistent habits.
+				</p>
+				<div class="flex flex-col sm:flex-row gap-4 justify-center">
+					<a href="/auth/register" class="button button-primary">Create Free Account</a>
+					<a href="/auth/login" class="button button-secondary">Sign In</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

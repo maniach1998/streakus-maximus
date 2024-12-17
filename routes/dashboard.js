@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { requireAuth } from "../middlewares/auth.js";
-import { getActiveStreaks, getUserHabits } from "../data/habits.js";
+import { getTopActiveHabits, getTopActiveStreaks } from "../data/habits.js";
 import { getWeeklyOverview } from "../data/stats.js";
 import { canMarkComplete } from "../helpers.js";
 
@@ -13,8 +13,8 @@ router.use(requireAuth);
 router.route("/").get(async (req, res) => {
 	try {
 		const [habits, streaks, weeklyOverview] = await Promise.all([
-			getUserHabits(req.session.user._id, "active"),
-			getActiveStreaks(req.session.user._id),
+			getTopActiveHabits(req.session.user._id, 4),
+			getTopActiveStreaks(req.session.user._id, 6),
 			getWeeklyOverview(req.session.user._id),
 		]);
 

@@ -313,3 +313,41 @@ export const getHabitExportData = async (habitId, userId) => {
 		})),
 	};
 };
+
+export const getTopActiveHabits = async (userId, limit = 4) => {
+	const habitsCollection = await habits();
+
+	const topHabits = await habitsCollection
+		.find({
+			userId: ObjectId.createFromHexString(userId),
+			status: "active",
+		})
+		.sort({ totalCompletions: -1 })
+		.limit(limit)
+		.toArray();
+
+	await Promise.all(
+		topHabits.map(async (habit) => {
+			habit.streak = await validateAndUpdateStreak(habit, userId);
+		})
+	);
+
+	return topHabits;
+};
+
+export const getTopActiveStreaks = async (userId, limit = 6) => {
+	const habitsCollection = await habits();
+
+	const activeStreaks = await habitsCollection
+		.find({
+			userId: ObjectId.createFromHexString(userId),
+			status: "active",
+			streak: { $gt: 0 },
+		})
+		.sort({ streak: -1 })
+		.project({ _id: 1, name: 1, frequency: 1, streak: 1 })
+		.limit(limit)
+		.toArray();
+
+	return activeStreaks;
+};
