@@ -17,7 +17,7 @@ export default (app) => {
 
 	app.use("*", async (req, res) => {
 		return res.status(404).render("error", {
-			title: "Not found",
+			title: "Not found | Streakus Maximus",
 			code: 404,
 			message: "Stop ⛔! We couldn't find this page...",
 		});

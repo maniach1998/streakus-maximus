@@ -21,7 +21,7 @@ router
 		const isAuthenticated = req.session.isAuthenticated;
 		if (isAuthenticated) return res.redirect("/dashboard");
 
-		return res.render("auth/signup", { title: "Sign Up" });
+		return res.render("auth/signup", { title: "Sign Up | Streakus Maximus" });
 	})
 	.post(async (req, res) => {
 		try {
@@ -39,7 +39,7 @@ router
 				return res.redirect("/auth/login");
 			} else {
 				return res.status(500).render("auth/signup", {
-					title: "Sign Up",
+					title: "Sign Up | Streakus Maximus",
 					error: { general: "Internal server error" },
 					...req.body,
 				});
@@ -53,13 +53,13 @@ router
 				});
 
 				return res.status(400).render("auth/signup", {
-					title: "Sign Up",
+					title: "Sign Up | Streakus Maximus",
 					error: errors,
 					...req.body,
 				});
 			} else {
 				return res.status(err.cause || 500).render("auth/signup", {
-					title: "Sign Up",
+					title: "Sign Up | Streakus Maximus",
 					error: { general: err.message || "Internal server error" },
 					...req.body,
 				});
@@ -82,9 +82,11 @@ router
 		delete req.session.newUser;
 		delete req.session.wasUnauthorized;
 
-		return res
-			.status(wasUnauthorized ? 401 : 200)
-			.render("auth/login", { title: "Log in", isNewUser, newUser });
+		return res.status(wasUnauthorized ? 401 : 200).render("auth/login", {
+			title: "Log in | Streakus Maximus",
+			isNewUser,
+			newUser,
+		});
 	})
 	.post(async (req, res) => {
 		try {
@@ -106,13 +108,13 @@ router
 				});
 
 				return res.status(400).render("auth/login", {
-					title: "Log in",
+					title: "Log in | Streakus Maximus",
 					error: errors,
 					...req.body,
 				});
 			} else {
 				return res.status(err.cause || 500).render("auth/login", {
-					title: "Log in",
+					title: "Log in | Streakus Maximus",
 					error: { general: err.message || "Internal server error" },
 					...req.body,
 				});
@@ -136,7 +138,7 @@ router.route("/verify-email/:token").get(async (req, res) => {
 		}
 
 		return res.render("auth/verify-success", {
-			title: "Email verified",
+			title: "Email verified | Streakus Maximus",
 			user,
 		});
 	} catch (err) {
@@ -148,12 +150,12 @@ router.route("/verify-email/:token").get(async (req, res) => {
 			});
 
 			return res.status(400).render("auth/verify-error", {
-				title: "Verification failed",
+				title: "Verification failed | Streakus Maximus",
 				error: errors,
 			});
 		} else {
 			return res.status(err.cause || 500).render("auth/verify-error", {
-				title: "Verification failed",
+				title: "Verification failed | Streakus Maximus",
 				error: { general: err.message || "Internal server error" },
 			});
 		}

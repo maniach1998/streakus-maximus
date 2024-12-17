@@ -27,7 +27,7 @@ router.route("/").get(async (req, res) => {
 		);
 
 		return res.render("dashboard/dashboard", {
-			title: "Dashboard",
+			title: "Dashboard | Streakus Maximus",
 			user: req.session.user,
 			habits: habitsWithStatus,
 			streaks,
@@ -36,7 +36,7 @@ router.route("/").get(async (req, res) => {
 		});
 	} catch (err) {
 		return res.status(err.cause || 500).render("error", {
-			title: "Error",
+			title: "Error | Streakus Maximus",
 			code: err.cause || 500,
 			message: err.message || "Internal server error",
 			error: err,

@@ -14,12 +14,12 @@ router.route("/profile").get(async (req, res) => {
 		const data = await getUserProfile(req.session.user._id);
 
 		return res.render("profile/profile", {
-			title: "Your Profile",
+			title: "Your Profile | Streakus Maximus",
 			...data,
 		});
 	} catch (err) {
 		return res.status(err.cause || 500).render("error", {
-			title: "Error",
+			title: "Error | Streakus Maximus",
 			code: err.cause || 500,
 			message: err.message || "Failed to load profile",
 		});
@@ -36,13 +36,13 @@ router
 			delete req.session.wasUpdated;
 
 			return res.render("profile/settings", {
-				title: "Settings",
+				title: "Settings | Streakus Maximus",
 				user,
 				wasUpdated,
 			});
 		} catch (err) {
 			return res.status(err.cause || 500).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: err.cause || 500,
 				message: err.message || "Failed to load settings",
 			});
@@ -72,7 +72,7 @@ router
 				return res.redirect("/settings");
 			} else {
 				return res.status(500).render("profile/settings", {
-					title: "Settings",
+					title: "Settings | Streakus Maximus",
 					error: { general: "Internal server error" },
 					user: { ...req.body },
 				});
@@ -88,7 +88,7 @@ router
 				});
 
 				return res.status(400).render("profile/settings", {
-					title: "Settings",
+					title: "Settings | Streakus Maximus",
 					user: {
 						...req.body,
 						email: sessionUser.email,
@@ -103,7 +103,7 @@ router
 				});
 			} else {
 				return res.status(err.cause || 500).render("profile/settings", {
-					title: "Settings",
+					title: "Settings | Streakus Maximus",
 					user: {
 						...req.body,
 						email: sessionUser.email,

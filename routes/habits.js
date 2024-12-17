@@ -36,13 +36,13 @@ router.route("/").get(async (req, res) => {
 		);
 
 		return res.render("habits/allHabits", {
-			title: "Your Habits",
+			title: "Your Habits | Streakus Maximus",
 			activeHabits: activeHabitsWithStatus,
 			inactiveHabits,
 		});
 	} catch (err) {
 		return res.status(err.cause || 500).render("error", {
-			title: "Error",
+			title: "Error | Streakus Maximus",
 			code: err.cause || 500,
 			message: err.message || "Internal server error",
 		});
@@ -53,7 +53,7 @@ router
 	.route("/new")
 	.get(async (req, res) => {
 		return res.render("habits/new", {
-			title: "Create a new habit",
+			title: "Create a new habit | Streakus Maximus",
 			formData: {},
 			errors: [],
 			isVerified: req.session.user.isVerified,
@@ -88,7 +88,7 @@ router
 				req.session.errors = err.errors;
 
 				return res.status(400).render("habits/new", {
-					title: "Create New Habit",
+					title: "Create New Habit | Streakus Maximus",
 					formData: req.body,
 					errors: err.errors,
 					isVerified: req.session.user.isVerified,
@@ -101,7 +101,7 @@ router
 				];
 
 				return res.status(err.cause || 500).render("habits/new", {
-					title: "Create New Habit",
+					title: "Create New Habit | Streakus Maximus",
 					formData: req.body,
 					errors: [
 						{
@@ -123,19 +123,28 @@ router.route("/:id").get(async (req, res) => {
 		delete req.session.success;
 
 		return res.render("habits/habit", {
-			title: `${habit.name} ${habit.streak}🔥`,
+			title: `${habit.name} ${habit.streak}🔥 | Streakus Maximus`,
 			habit,
 			wasUpdated,
 		});
 	} catch (err) {
 		if (err instanceof z.ZodError) {
-			return res.status(400).json({
-				success: false,
-				errors: err.errors,
+			const errors = {};
+
+			err.errors.forEach((error) => {
+				errors[error.path[0]] = error.message;
+			});
+
+			return res.status(400).render("error", {
+				title: "Error | Streakus Maximus",
+				code: 400,
+				message: "Invalid habit ID",
+				errors,
 			});
 		} else {
-			return res.status(err.cause || 500).json({
-				success: false,
+			return res.status(err.cause || 500).render("error", {
+				title: "Error | Streakus Maximus",
+				code: err.cause || 500,
 				message: err.message || "Internal server error",
 			});
 		}
@@ -150,7 +159,7 @@ router
 			const habit = await getHabitById(validatedId._id, req.session.user._id);
 
 			return res.render("habits/edit", {
-				title: `Edit ${habit.name}`,
+				title: `Edit ${habit.name} | Streakus Maximus`,
 				habit,
 				isVerified: req.session.user.isVerified,
 			});
@@ -163,14 +172,14 @@ router
 				});
 
 				return res.status(400).render("error", {
-					title: "Error",
+					title: "Error | Streakus Maximus",
 					code: 400,
 					message: "Invalid habit ID",
 					errors,
 				});
 			} else {
 				return res.status(err.cause || 500).render("error", {
-					title: "Error",
+					title: "Error | Streakus Maximus",
 					code: err.cause || 500,
 					message: err.message || "Internal server error",
 				});
@@ -208,7 +217,7 @@ router
 
 			if (err instanceof z.ZodError) {
 				return res.status(400).render("habits/edit", {
-					title: "Edit Habit",
+					title: "Edit Habit | Streakus Maximus",
 					habit: { ...req.body, _id },
 					error: err.errors.reduce((acc, curr) => {
 						acc[curr.path[0]] = curr.message;
@@ -218,7 +227,7 @@ router
 				});
 			} else {
 				return res.status(err.cause || 500).render("habits/edit", {
-					title: "Edit Habit",
+					title: "Edit Habit | Streakus Maximus",
 					habit: { ...req.body, _id },
 					error: { general: err.message || "Internal server error" },
 					isVerified: req.session.user.isVerified,
@@ -234,7 +243,7 @@ router.route("/:id/stats").get(async (req, res) => {
 		const stats = await getHabitStats(validatedId._id, req.session.user._id);
 
 		return res.render("habits/stats", {
-			title: `${habit.name} - Stats`,
+			title: `${habit.name} - Stats | Streakus Maximus`,
 			habit,
 			stats,
 		});
@@ -247,14 +256,14 @@ router.route("/:id/stats").get(async (req, res) => {
 			});
 
 			return res.status(400).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: 400,
 				message: "Invalid habit ID",
 				errors,
 			});
 		} else {
 			return res.status(err.cause || 500).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: err.cause || 500,
 				message: err.message || "Internal server error",
 			});
@@ -271,7 +280,7 @@ router.route("/:id/streaks").get(async (req, res) => {
 		);
 
 		return res.render("habits/streaks", {
-			title: `${habit.name} Streaks`,
+			title: `${habit.name} - Streaks | Streakus Maximus`,
 			habit,
 			allStreaks,
 			longestStreak,
@@ -285,14 +294,14 @@ router.route("/:id/streaks").get(async (req, res) => {
 			});
 
 			return res.status(400).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: 400,
 				message: "Invalid habit ID",
 				errors,
 			});
 		} else {
 			return res.status(err.cause || 500).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: err.cause || 500,
 				message: err.message || "Internal server error",
 			});
@@ -310,7 +319,7 @@ router.route("/:id/completions").get(async (req, res) => {
 		);
 
 		return res.render("habits/completions", {
-			title: `${habit.name} Completions`,
+			title: `${habit.name} - Completions | Streakus Maximus`,
 			habit,
 			completions,
 		});
@@ -323,14 +332,14 @@ router.route("/:id/completions").get(async (req, res) => {
 			});
 
 			return res.status(400).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: 400,
 				message: "Invalid habit ID",
 				errors,
 			});
 		} else {
 			return res.status(err.cause || 500).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: err.cause || 500,
 				message: err.message || "Internal server error",
 			});
@@ -355,7 +364,7 @@ router.route("/:id/progress").get(async (req, res) => {
 		});
 
 		return res.render("habits/progress", {
-			title: `${data.habit.name} Progress`,
+			title: `${data.habit.name} - Progress | Streakus Maximus`,
 			...data,
 		});
 	} catch (err) {
@@ -367,14 +376,14 @@ router.route("/:id/progress").get(async (req, res) => {
 			});
 
 			return res.status(400).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: 400,
 				message: "Invalid habit ID",
 				errors,
 			});
 		} else {
 			return res.status(err.cause || 500).render("error", {
-				title: "Error",
+				title: "Error | Streakus Maximus",
 				code: err.cause || 500,
 				message: err.message || "Internal server error",
 			});
