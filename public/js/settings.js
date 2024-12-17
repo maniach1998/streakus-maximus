@@ -24,6 +24,10 @@ export async function resendVerification() {
 			successDiv.classList.remove("hidden");
 
 			button.innerHTML = `<i data-lucide="mail-check" class="size-4"></i> ${data.message}`;
+
+			if (window.lucide) {
+				window.lucide.createIcons();
+			}
 		} else {
 			throw new Error(data.message);
 		}

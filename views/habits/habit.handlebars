@@ -40,7 +40,7 @@
 
 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
   <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
-    <button onclick="markHabitComplete('{{habit._id}}')" data-complete-button class="button" {{#unless
+    <button onclick="completeHabit('{{habit._id}}')" data-complete-button class="button" {{#unless
       habit.canComplete}}disabled{{/unless}}>
       {{#if habit.canComplete}}
       <i data-lucide="check" class="size-4"></i>
@@ -87,9 +87,9 @@
     </p>
     <button onclick="toggleReminder('{{habit._id}}')" class="button button-secondary" data-reminder-toggle>
       {{#if (eq habit.reminder.status "active")}}
-      Remove Reminder
+      <i data-lucide="bell-off" class="size-4"></i>Remove Reminder
       {{else}}
-      Reactivate Reminder
+      <i data-lucide="bell-ring" class="size-4"></i>Reactivate Reminder
       {{/if}}
     </button>
   </div>
@@ -100,7 +100,7 @@
 
 <div class="bg-card border border-secondary rounded-lg p-6">
   {{#if habit.canComplete}}
-  <div class="mb-5 p-4 bg-primary/10 border border-primary/20 rounded-md">
+  <div class="mb-5 p-4 bg-primary/10 border border-primary/20 rounded-md" data-complete-notification>
     <p class="font-medium">You've got this! You can complete this habit today🚨</p>
   </div>
   {{/if}}
@@ -124,14 +124,14 @@
     </div>
 
     {{#if habit.lastCompleted}}
-    <div>
+    <div data-last-completed>
       <h3 class="text-sm font-medium text-muted-foreground">Last Completed</h3>
       <p class="mt-1 font-medium">{{formatDate habit.lastCompleted}} ({{fromNow habit.lastCompleted}})</p>
     </div>
     {{/if}}
 
     {{#if habit.nextAvailable}}
-    <div>
+    <div data-next-available>
       <h3 class="text-sm font-medium text-muted-foreground">Next Available</h3>
       <p class="mt-1 font-medium">{{formatDate habit.nextAvailable}} ({{fromNow habit.nextAvailable}})</p>
     </div>
@@ -140,3 +140,4 @@
 </div>
 
 <script src="/public/js/reminder.js"></script>
+<script src="/public/js/habit-details.js"></script>
