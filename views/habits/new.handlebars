@@ -4,18 +4,18 @@
       <p class="text-muted-foreground mt-2">Start tracking a new habit and build your streak!</p>
 </div>
 
-<form action="/habits/new" method="post" class="space-y-6">
+<form action="/habits/new" method="post" class="space-y-6" data-form="new-habit">
   <div class="space-y-2">
     <label for="name" class="text-sm font-medium">
       Habit name
       <span class="text-destructive">*</span>
     </label>
-    <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" value="{{formData.name}}" />
-    {{#each errors}}
-    {{#if (eq this.path.[0] "name")}}
-    <p class="text-destructive text-sm">{{this.message}}</p>
-    {{/if}}
-    {{/each}}
+    <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" value="{{formData.name}}"
+      data-input="name" class="{{#if errors}}{{#each errors}}{{#if (eq this.path.[0] "
+      name")}}border-destructive{{/if}}{{/each}}{{/if}}" />
+    <p class="text-destructive text-sm" data-error="name">
+      {{#each errors}}{{#if (eq this.path.[0] "name")}}{{this.message}}{{/if}}{{/each}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -24,12 +24,11 @@
       <span class="text-destructive">*</span>
     </label>
     <textarea name="description" id="description" required placeholder="Describe your habit in detail"
-      class="h-24">{{formData.description}}</textarea>
-    {{#each errors}}
-    {{#if (eq this.path.[0] "description")}}
-    <p class="text-destructive text-sm">{{this.message}}</p>
-    {{/if}}
-    {{/each}}
+      data-input="description" class="h-24 {{#if errors}}{{#each errors}}{{#if (eq this.path.[0] "
+      description")}}border-destructive{{/if}}{{/each}}{{/if}}">{{formData.description}}</textarea>
+    <p class="text-destructive text-sm" data-error="description">
+      {{#each errors}}{{#if (eq this.path.[0] "description")}}{{this.message}}{{/if}}{{/each}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -37,30 +36,30 @@
       Frequency
       <span class="text-destructive">*</span>
     </label>
-    <select name="frequency" id="frequency" required>
+    <select name="frequency" id="frequency" required data-input="frequency"
+      class="{{#if errors}}{{#each errors}}{{#if (eq this.path.[0] "
+      frequency")}}border-destructive{{/if}}{{/each}}{{/if}}">
       <option value="" {{#unless formData.frequency}}selected{{/unless}} disabled>Select frequency</option>
       <option value="daily" {{#if (eq formData.frequency "daily" )}}selected{{/if}}>Daily 🌞</option>
       <option value="weekly" {{#if (eq formData.frequency "weekly" )}}selected{{/if}}>Weekly 📅</option>
       <option value="monthly" {{#if (eq formData.frequency "monthly" )}}selected{{/if}}>Monthly 📆</option>
     </select>
-    {{#each errors}}
-    {{#if (eq this.path.[0] "frequency")}}
-    <p class="text-destructive text-sm">{{this.message}}</p>
-    {{/if}}
-    {{/each}}
+    <p class="text-destructive text-sm" data-error="frequency">
+      {{#each errors}}{{#if (eq this.path.[0] "frequency")}}{{this.message}}{{/if}}{{/each}}
+    </p>
   </div>
 
   <div class="space-y-2">
     <label for="reminderTime" class="text-sm font-medium">
       Daily Reminder (Optional)
     </label>
-    <input type="time" name="reminderTime" id="reminderTime" value="{{formData.reminderTime}}" class="w-full" {{#unless
-      isVerified}}disabled{{/unless}}>
-    {{#each errors}}
-    {{#if (eq this.path.[0] "reminderTime")}}
-    <p class="text-destructive text-sm">{{this.message}}</p>
-    {{/if}}
-    {{/each}}
+    <input type="time" name="reminderTime" id="reminderTime" value="{{formData.reminderTime}}" data-input="reminderTime"
+      class="w-full 
+      {{#if errors}}{{#each errors}}{{#if (eq this.path.[0] "
+      reminderTime")}}border-destructive{{/if}}{{/each}}{{/if}}" {{#unless isVerified}}disabled{{/unless}}>
+    <p class="text-destructive text-sm" data-error="reminderTime">
+      {{#each errors}}{{#if (eq this.path.[0] "reminderTime")}}{{this.message}}{{/if}}{{/each}}
+    </p>
     <p class="text-sm text-muted-foreground">
       Set a daily reminder to help you stay on track
     </p>
@@ -71,12 +70,6 @@
     </p>
     {{/unless}}
   </div>
-
-  {{#if errors}}
-  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-    <p class="text-destructive text-sm font-medium">Please fix the errors above</p>
-  </div>
-  {{/if}}
 
   <div class="flex justify-end gap-4">
     <a href="/habits"
@@ -89,3 +82,5 @@
     </button>
   </div>
 </form>
+
+<script src="/public/js/new-habit.js"></script>

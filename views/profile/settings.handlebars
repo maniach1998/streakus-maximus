@@ -12,7 +12,7 @@
       {{/if}}
 </div>
 
-<form action="/settings" method="POST" class="space-y-8">
+<form action="/settings" method="POST" class="space-y-8" data-form="settings">
   {{!-- Hidden method field for PUT request --}}
   <input type="hidden" name="_method" value="PUT">
 
@@ -24,11 +24,11 @@
         First Name
         <span class="text-destructive">*</span>
       </label>
-      <input type="text" name="firstName" id="firstName" value="{{user.firstName}}" required
+      <input type="text" name="firstName" id="firstName" value="{{user.firstName}}" required data-input="firstName"
         class="w-full {{#if error.firstName}}border-destructive{{/if}}" />
-      {{#if error.firstName}}
-      <p class="text-destructive text-sm">{{error.firstName}}</p>
-      {{/if}}
+      <p class="text-destructive font-medium text-sm" data-error="firstName">
+        {{#if error.firstName}}{{error.firstName}}{{/if}}
+      </p>
     </div>
 
     <div class="space-y-2">
@@ -36,11 +36,11 @@
         Last Name
         <span class="text-destructive">*</span>
       </label>
-      <input type="text" name="lastName" id="lastName" value="{{user.lastName}}" required
+      <input type="text" name="lastName" id="lastName" value="{{user.lastName}}" required data-input="lastName"
         class="w-full {{#if error.lastName}}border-destructive{{/if}}" />
-      {{#if error.lastName}}
-      <p class="text-destructive text-sm">{{error.lastName}}</p>
-      {{/if}}
+      <p class="text-destructive font-medium text-sm" data-error="lastName">
+        {{#if error.lastName}}{{error.lastName}}{{/if}}
+      </p>
     </div>
 
     <div class="space-y-2">
@@ -94,7 +94,7 @@
       <div class="flex items-start gap-3">
         <input type="checkbox" name="emailPreferences.achievements" id="achievements" {{#if
           user.emailPreferences.achievements}}checked{{/if}} {{#unless user.isVerified}}disabled{{/unless}}
-          class="mt-1.5" />
+          data-input="achievements" class="mt-1.5" />
         <div>
           <label for="achievements" class="text-sm font-medium">Achievement Notifications</label>
           <p class="text-sm text-muted-foreground">
@@ -106,7 +106,7 @@
       <div class="flex items-start gap-3">
         <input type="checkbox" name="emailPreferences.habitReminders" id="habitReminders" {{#if
           user.emailPreferences.habitReminders}}checked{{/if}} {{#unless user.isVerified}}disabled{{/unless}}
-          class="mt-1.5" />
+          data-input="habitReminders" class="mt-1.5" />
         <div>
           <label for="habitReminders" class="text-sm font-medium">Habit Reminders</label>
           <p class="text-sm text-muted-foreground">
@@ -118,7 +118,7 @@
       <div class="flex items-start gap-3">
         <input type="checkbox" name="emailPreferences.streakAlerts" id="streakAlerts" {{#if
           user.emailPreferences.streakAlerts}}checked{{/if}} {{#unless user.isVerified}}disabled{{/unless}}
-          class="mt-1.5" />
+          data-input="streakAlerts" class="mt-1.5" />
         <div>
           <label for="streakAlerts" class="text-sm font-medium">Streak Alerts</label>
           <p class="text-sm text-muted-foreground">
@@ -131,7 +131,7 @@
 
   {{#if error.general}}
   <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-    <p class="text-destructive text-sm">{{error.general}}</p>
+    <p class="text-destructive text-sm" data-error="general">{{error.general}}</p>
   </div>
   {{/if}}
 
@@ -141,3 +141,5 @@
     </button>
   </div>
 </form>
+
+<script src="/public/js/settings-form.js"></script>

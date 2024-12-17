@@ -13,17 +13,17 @@
   {{/if}}
 </div>
 
-<form action="/auth/login" method="POST" class="space-y-6">
+<form action="/auth/login" method="POST" class="space-y-6" data-form="login">
   <div class="space-y-2">
     <label for="email" class="text-sm font-medium">
       Email address
       <span class="text-destructive">*</span>
     </label>
     <input type="email" name="email" id="email" value="{{email}}" required placeholder="name@example.com"
-      class="{{#if error.email}}border-destructive{{/if}}" />
-    {{#if error.email}}
-    <p class="text-destructive text-sm">{{error.email}}</p>
-    {{/if}}
+      data-input="email" class="{{#if error.email}}border-destructive{{/if}}" />
+    <p class="text-destructive text-sm" data-error="email">
+      {{#if error.email}}{{error.email}}{{/if}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -32,15 +32,15 @@
       <span class="text-destructive">*</span>
     </label>
     <input type="password" name="password" id="password" value="{{password}}" required placeholder="Enter your password"
-      class="{{#if error.password}}border-destructive{{/if}}" />
-    {{#if error.password}}
-    <p class="text-destructive text-sm">{{error.password}}</p>
-    {{/if}}
+      data-input="password" class="{{#if error.password}}border-destructive{{/if}}" />
+    <p class="text-destructive text-sm" data-error="password">
+      {{#if error.password}}{{error.password}}{{/if}}
+    </p>
   </div>
 
   {{#if error.general}}
-  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-    <p class="text-destructive text-sm font-medium">{{error.general}}</p>
+  <div class="p-3 bg-destructive/50 border border-destructive/20 rounded-md">
+    <p class="text-destructive-foreground text-sm font-medium" data-error="general">{{error.general}}</p>
   </div>
   {{/if}}
 
@@ -57,3 +57,5 @@
     </a>
   </p>
 </div>
+
+<script src="/public/js/login.js"></script>

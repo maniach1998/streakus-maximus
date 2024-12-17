@@ -4,7 +4,7 @@
       <p class="text-muted-foreground mt-2">Update your habit details to better track your progress</p>
 </div>
 
-<form action="/habits/{{habit._id}}/edit" method="POST" class="space-y-6">
+<form action="/habits/{{habit._id}}/edit" method="POST" class="space-y-6" data-form="edit-habit">
   {{!-- Hidden method field for PUT request --}}
   <input type="hidden" name="_method" value="PUT">
 
@@ -14,10 +14,10 @@
       <span class="text-destructive">*</span>
     </label>
     <input type="text" name="name" id="name" required placeholder="e.g., Morning Exercise" value="{{habit.name}}"
-      class="{{#if error.name}}border-destructive{{/if}}" />
-    {{#if error.name}}
-    <p class="text-destructive text-sm">{{error.name}}</p>
-    {{/if}}
+      data-input="name" class="{{#if error.name}}border-destructive{{/if}}" />
+    <p class="text-destructive text-sm" data-error="name">
+      {{#if error.name}}{{error.name}}{{/if}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -26,10 +26,11 @@
       <span class="text-destructive">*</span>
     </label>
     <textarea name="description" id="description" required placeholder="Describe your habit in detail"
+      data-input="description"
       class="h-24 {{#if error.description}}border-destructive{{/if}}">{{habit.description}}</textarea>
-    {{#if error.description}}
-    <p class="text-destructive text-sm">{{error.description}}</p>
-    {{/if}}
+    <p class="text-destructive text-sm" data-error="description">
+      {{#if error.description}}{{error.description}}{{/if}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -37,15 +38,16 @@
       Frequency
       <span class="text-destructive">*</span>
     </label>
-    <select name="frequency" id="frequency" required class="{{#if error.frequency}}border-destructive{{/if}}">
+    <select name="frequency" id="frequency" required data-input="frequency"
+      class="{{#if error.frequency}}border-destructive{{/if}}">
       <option value="" {{#unless habit.frequency}}selected{{/unless}} disabled>Select frequency</option>
       <option value="daily" {{#if (eq habit.frequency "daily" )}}selected{{/if}}>Daily 🌞</option>
       <option value="weekly" {{#if (eq habit.frequency "weekly" )}}selected{{/if}}>Weekly 📅</option>
       <option value="monthly" {{#if (eq habit.frequency "monthly" )}}selected{{/if}}>Monthly 📆</option>
     </select>
-    {{#if error.frequency}}
-    <p class="text-destructive text-sm">{{error.frequency}}</p>
-    {{/if}}
+    <p class="text-destructive text-sm" data-error="frequency">
+      {{#if error.frequency}}{{error.frequency}}{{/if}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -53,13 +55,14 @@
       Status
       <span class="text-destructive">*</span>
     </label>
-    <select name="status" id="status" required class="{{#if error.status}}border-destructive{{/if}}">
+    <select name="status" id="status" required data-input="status"
+      class="{{#if error.status}}border-destructive{{/if}}">
       <option value="active" {{#if (eq habit.status "active" )}}selected{{/if}}>Active</option>
       <option value="inactive" {{#if (eq habit.status "inactive" )}}selected{{/if}}>Inactive</option>
     </select>
-    {{#if error.status}}
-    <p class="text-destructive text-sm">{{error.status}}</p>
-    {{/if}}
+    <p class="text-destructive text-sm" data-error="status">
+      {{#if error.status}}{{error.status}}{{/if}}
+    </p>
   </div>
 
   <div class="space-y-2">
@@ -67,11 +70,12 @@
       Reminder (Optional)
     </label>
     <input type="time" name="reminderTime" id="reminderTime"
-      value="{{#if habit.reminder}}{{formatTime habit.reminder.time}}{{/if}}"
+      value="{{#if habit.reminder}}{{formatTime habit.reminder.time}}{{/if}}" data-input="reminderTime"
+      data-has-reminder="{{#if habit.reminder}}true{{else}}false{{/if}}"
       class="w-full {{#if error.reminderTime}}border-destructive{{/if}}" {{#unless isVerified}}disabled{{/unless}}>
-    {{#if error.reminderTime}}
-    <p class="text-destructive text-sm">{{error.reminderTime}}</p>
-    {{/if}}
+    <p class="text-destructive text-sm" data-error="reminderTime">
+      {{#if error.reminderTime}}{{error.reminderTime}}{{/if}}
+    </p>
     <p class="text-sm text-muted-foreground">
       Set a reminder to help you stay on track with your {{habit.frequency}} habit
     </p>
@@ -83,12 +87,6 @@
     {{/unless}}
   </div>
 
-  {{#if error.general}}
-  <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-    <p class="text-destructive font-medium text-sm">{{error.general}}</p>
-  </div>
-  {{/if}}
-
   <div class="flex justify-end gap-4">
     <a href="/habits/{{habit._id}}"
       class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -99,3 +97,5 @@
     </button>
   </div>
 </form>
+
+<script src="/public/js/edit-habit.js"></script>

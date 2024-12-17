@@ -6,17 +6,17 @@
 </div>
 
 
-<form action="/auth/sign-up" method="POST" class="space-y-6">
+<form action="/auth/sign-up" method="POST" class="space-y-6" data-form="signup">
 	<div class="space-y-2">
 		<label for="firstName" class="text-sm font-medium">
 			First Name
 			<span class="text-destructive">*</span>
 		</label>
 		<input type="text" name="firstName" id="firstName" value="{{firstName}}" required placeholder="John"
-			class="{{#if error.firstName}}border-destructive{{/if}}" />
-		{{#if error.firstName}}
-		<p class="text-destructive text-sm font-medium">{{error.firstName}}</p>
-		{{/if}}
+			data-input="firstName" class="{{#if error.firstName}}border-destructive{{/if}}" />
+		<p class="text-destructive text-sm font-medium" data-error="firstName">
+			{{#if error.firstName}}{{error.firstName}}{{/if}}
+		</p>
 	</div>
 
 	<div class="space-y-2">
@@ -25,10 +25,10 @@
 			<span class="text-destructive">*</span>
 		</label>
 		<input type="text" name="lastName" id="lastName" value="{{lastName}}" required placeholder="Doe"
-			class="{{#if error.lastName}}border-destructive{{/if}}" />
-		{{#if error.lastName}}
-		<p class="text-destructive text-sm font-medium">{{error.lastName}}</p>
-		{{/if}}
+			data-input="lastName" class="{{#if error.lastName}}border-destructive{{/if}}" />
+		<p class="text-destructive text-sm font-medium" data-error="lastName">
+			{{#if error.lastName}}{{error.lastName}}{{/if}}
+		</p>
 	</div>
 
 	<div class="space-y-2">
@@ -37,10 +37,13 @@
 			<span class="text-destructive">*</span>
 		</label>
 		<input type="email" name="email" id="email" value="{{email}}" required placeholder="name@example.com"
-			class="{{#if error.email}}border-destructive{{/if}}" />
-		{{#if error.email}}
-		<p class="text-destructive text-sm font-medium">{{error.email}}</p>
-		{{/if}}
+			data-input="email" class="{{#if error.email}}border-destructive{{/if}}" />
+		<p class="text-destructive text-sm font-medium" data-error="email">
+			{{#if error.email}}{{error.email}}{{/if}}
+		</p>
+		{{#unless error.email}}
+		<p class="text-muted-foreground text-sm">We'll use this email to send you important updates and notifications.</p>
+		{{/unless}}
 	</div>
 
 	<div class="space-y-2">
@@ -49,15 +52,19 @@
 			<span class="text-destructive">*</span>
 		</label>
 		<input type="password" name="password" id="password" value="{{password}}" required
-			placeholder="Create a strong password" class="{{#if error.password}}border-destructive{{/if}}" />
-		{{#if error.password}}
-		<p class="text-destructive text-sm font-medium">{{error.password}}</p>
-		{{/if}}
+			placeholder="Create a strong password" data-input="password"
+			class="{{#if error.password}}border-destructive{{/if}}" />
+		<p class="text-destructive text-sm font-medium" data-error="password">
+			{{#if error.password}}{{error.password}}{{/if}}
+		</p>
+		{{#unless error.password}}
+		<p class="text-muted-foreground text-sm">When you create a password, it should be at least 8 characters long.</p>
+		{{/unless}}
 	</div>
 
 	{{#if error.general}}
-	<div class="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-		<p class="text-destructive text-sm font-medium">{{error.general}}</p>
+	<div class="p-3 bg-destructive/50 border border-destructive/20 rounded-md">
+		<p class="text-destructive-foreground text-sm font-medium">{{error.general}}</p>
 	</div>
 	{{/if}}
 
@@ -74,3 +81,5 @@
 		</a>
 	</p>
 </div>
+
+<script src="/public/js/signup.js"></script>
