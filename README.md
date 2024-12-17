@@ -158,3 +158,5 @@ password: Manas@1998
 email: acharekar.manas11@gmail.com
 password: Manas@1998
 ```
+
+NOTE: THERE IS NO SEED FILE, USING MONGODB ATLAS
