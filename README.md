@@ -1,5 +1,7 @@
 # Streakus Maximus
 
+## CS546 Project by Manas Acharekar (CWID: 10475301)
+
 Streakus Maximus is a habit tracking application that helps users build lasting habits through the power of streaks and consistent progress tracking. The app features daily, weekly, and monthly habit tracking, detailed analytics, smart reminders, and achievement tracking to keep users motivated on their journey to better habits.
 
 ## Setup Instructions
