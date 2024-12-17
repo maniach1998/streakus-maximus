@@ -65,6 +65,16 @@ class ReminderService {
 			this.cancelReminder(habit._id.toString());
 		}
 
+		// dont schedule for inactive habits
+		if (
+			habit.status === "inactive" ||
+			!habit.reminder ||
+			habit.reminder.status === "inactive"
+		) {
+			this.cancelReminder(habit._id.toString());
+			return;
+		}
+
 		const nextReminderTime = this.calculateNextReminderTime(habit);
 		const delay = nextReminderTime.diff(dayjs());
 

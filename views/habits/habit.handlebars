@@ -73,11 +73,11 @@
   </div>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4" data-reminder-section>
   <h3 class="text-sm font-medium text-muted-foreground">Reminder</h3>
   {{#if habit.reminder}}
   <div class="mt-1 flex items-center justify-between">
-    <p class="font-medium">
+    <p class="font-medium" data-reminder-status>
       {{habit.reminder.time}}
       {{#if (eq habit.reminder.status "active")}}
       <span class="inline-block w-2 h-2 bg-green-500 rounded-full ml-2"></span>
@@ -85,7 +85,8 @@
       <span class="inline-block w-2 h-2 bg-gray-500 rounded-full ml-2"></span>
       {{/if}}
     </p>
-    <button onclick="toggleReminder('{{habit._id}}')" class="button button-secondary" data-reminder-toggle>
+    <button onclick="toggleReminder('{{habit._id}}')" class="button button-secondary" {{#if (eq habit.status "inactive"
+      )}}disabled{{/if}} data-reminder-toggle>
       {{#if (eq habit.reminder.status "active")}}
       <i data-lucide="bell-off" class="size-4"></i>Remove Reminder
       {{else}}
@@ -108,14 +109,27 @@
   <div class="space-y-4">
     <div>
       <h3 class="text-sm font-medium text-muted-foreground">Status</h3>
-      <p class="mt-1 font-medium capitalize">
-        {{habit.status}}
-        {{#if (eq habit.status "active")}}
-        <span class="inline-block w-2 h-2 bg-green-500 rounded-full ml-2"></span>
-        {{else}}
-        <span class="inline-block w-2 h-2 bg-gray-500 rounded-full ml-2"></span>
-        {{/if}}
-      </p>
+      <div class="flex items-center gap-4">
+        <div data-status-indicator>
+          <span class="inline-flex items-center gap-1.5">
+            {{#if (eq habit.status "active")}}Active{{else}}Inactive{{/if}}
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full rounded-full 
+              {{#if (eq habit.status " active")}}bg-green-500{{else}}bg-gray-500{{/if}}"></span>
+            </span>
+          </span>
+        </div>
+
+        <button onclick="toggleHabitStatus('{{habit._id}}', '{{habit.status}}')" data-status-toggle
+          class="button {{#if (eq habit.status " active")}}button-destructive{{else}}button-secondary{{/if}}">
+          <i data-lucide="power" class="size-4"></i>
+          {{#if (eq habit.status "active")}}
+          Deactivate
+          {{else}}
+          Reactivate
+          {{/if}}
+        </button>
+      </div>
     </div>
 
     <div>
@@ -141,3 +155,4 @@
 
 <script src="/public/js/reminder.js"></script>
 <script src="/public/js/habit-details.js"></script>
+<script src="/public/js/habit-status.js"></script>

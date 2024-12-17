@@ -158,22 +158,33 @@ export const deactivateHabit = async (habitId, userId) => {
 	const validatedId = habitIdSchema.parse({ _id: habitId });
 	const habitsCollection = await habits();
 
+	const habit = await getHabitById(habitId, userId);
+	if (!habit) throw new Error("Habit not found!", { cause: 404 });
+
+	const updateData = {
+		status: "inactive",
+		updatedAt: new Date().toISOString(),
+	};
+
+	if (habit.reminder) {
+		updateData.reminder = {
+			...habit.reminder,
+			status: "inactive",
+		};
+	}
+
 	const response = await habitsCollection.findOneAndUpdate(
 		{
 			_id: ObjectId.createFromHexString(validatedId._id),
 			userId: ObjectId.createFromHexString(userId),
 		},
 		{
-			$set: {
-				status: "inactive",
-				updatedAt: new Date().toISOString(),
-			},
+			$set: updateData,
 		},
 		{ returnDocument: "after" }
 	);
 
 	if (!response) throw new Error("Habit not found!", { cause: 404 });
-
 	return response;
 };
 

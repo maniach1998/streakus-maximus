@@ -71,7 +71,13 @@ router.route("/:id/deactivate").post(async (req, res) => {
 	try {
 		const habit = await deactivateHabit(req.params.id, req.session.user._id);
 
-		return res.json({ success: true, habit });
+		reminderService.cancelReminder(habit._id.toString());
+
+		return res.json({
+			success: true,
+			message: "Habit deactivated successfully",
+			habit,
+		});
 	} catch (err) {
 		if (err instanceof z.ZodError) {
 			return res.status(400).json({
